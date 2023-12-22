@@ -1,8 +1,10 @@
 const express=require("express"); 
+const path = require('path');
+global.app_root = path.resolve(__dirname);
 const CFG     = require(app_root + '/config/config')
 const { exec, execSync, spawn } = require("child_process")
 const fs   = require('fs');
-const path = require('path');
+
 const app= express();        //binds the express module to 'app'
 
 //setting the view engine as EJS. 
