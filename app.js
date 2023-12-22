@@ -36,7 +36,7 @@ app.get("/anvio", function(req,res){
     if(!isInt(port)){
       return res.send("Bad port: '"+req.query.port+"'")
     }
-    docker_params = ['exec','anvio','anvi-display-pan','-P',port,'-p',pg+'/PAN.db','-g',pg+'/GENOMES.db']
+    docker_params = ['exec','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     
     docker_params.push('--server-only')
     docker_params.push('--debug')
