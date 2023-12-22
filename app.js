@@ -42,7 +42,7 @@ app.get("/anvio", function(req,res){
     docker_params.push('--debug')
     console.log('docker '+docker_params.join(' '))
     var out = fs.openSync(path.join(CFG.PATH_TO_PANGENOMES,'anvio.'+port+'.log'), 'w');
-    var proc = spawn('/usr/local/bin/docker', docker_params, {
+    var proc = spawn(CFG.DOCKERPATH, docker_params, {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     detached: true, stdio: [ 'ignore', out, out ]  //, stdio: 'pipe'
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
