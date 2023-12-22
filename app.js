@@ -1,4 +1,5 @@
 const express=require("express"); 
+const CFG     = require(app_root + '/config/config')
 const { exec, execSync, spawn } = require("child_process")
 const fs   = require('fs');
 const path = require('path');
@@ -24,14 +25,8 @@ app.get("/anvio", function(req,res){
     if(!req.query.pg){
       pg = 'Veillonella_Atypica'
     }
-    let PATH_TO_PANGENOMES = '/Users/avoorhis/programming/github/pangenomes'
-    //
-   //host_url = 'localhost:3010'
-   // if(host_url == 'anvio.homd.org'){
-//    
-//    }else{
-//    
-//    }
+    
+  
     if(!req.query.port){
       return res.send("port not found")
     }
@@ -44,7 +39,7 @@ app.get("/anvio", function(req,res){
     docker_params.push('--server-only')
     docker_params.push('--debug')
     console.log('docker '+docker_params.join(' '))
-    var out = fs.openSync(path.join(PATH_TO_PANGENOMES,'anvio.'+port+'.log'), 'w');
+    var out = fs.openSync(path.join(CFG.PATH_TO_PANGENOMES,'anvio.'+port+'.log'), 'w');
     var proc = spawn('/usr/local/bin/docker', docker_params, {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     detached: true, stdio: [ 'ignore', out, out ]  //, stdio: 'pipe'
@@ -54,7 +49,7 @@ app.get("/anvio", function(req,res){
      //console.log('proc',proc)
      //url = 'http://localhost:'+port
      //let url = 'http://localhost:3010/anvio?port='+port+'&pg='+pg
-     let url = 'http://localhost:'+port
+     let url = CFG.URL_BASE+'/'+port
      //return res.send(url)
      res.render('pages/index', {
         title: 'HOMD :: ANVIO',
