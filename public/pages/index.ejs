@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<style>
+ .loading-overlay {
+    display: none;
+    background: rgba( 26, 26, 26, 0.7 );
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    top: 0;
+}
+
+.loading-overlay-image-container {
+    display: none;
+    position: fixed;
+    z-index: 7;
+    top: 50%;
+    left: 50%;
+    transform: translate( -50%, -50% );
+}
+
+.loading-overlay-img {
+    width: 850px;
+    /* height: 250px; */
+    border-radius: 5px;
+}
+
+body{
+   paddong: 50px;
+   margin:0;
+   font-size:16px;
+}
+</style>
+<html>
+<head>
+  <title><%= title %></title>
+</head>
+
+<body>
+<div>
+  <%= pg %>
+  <br><br>
+  Loading.... <%= url %>
+</div>
+<br><br>[<span id='message'>Info</span>]
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+console.log('start here JS')
+var loader_delay = 10000;
+var loader = {
+    
+    initialize : function () {
+        console.log('init')
+        var html =
+            '<div class="loading-overlay"></div>' +
+            '<div class="loading-overlay-image-container">' +
+                '<img src="/assets/loading3.gif" class="loading-overlay-img"/>' +
+            '</div>';
+
+        // append our html to the DOM body
+        $( 'body' ).append( html );
+    },
+
+    showLoader : function () {
+        jQuery( '.loading-overlay' ).show();
+        jQuery( '.loading-overlay-image-container' ).show();
+    },
+
+    hideLoader : function () {
+        jQuery( '.loading-overlay' ).hide();
+        jQuery( '.loading-overlay-image-container' ).hide();
+    }
+}
+$( function() { // do things when the document is ready
+    // initialize our loader overlay
+    console.log('onload')
+    loader.initialize();
+    loader.showLoader();
+});
+function delay (URL) {
+    setTimeout( function() { 
+        window.open(URL,'_self') 
+        loader.hideLoader();
+    }, loader_delay );
+}
+function isInt(value) {
+  return !isNaN(value) && 
+         parseInt(Number(value)) == value && 
+         !isNaN(parseInt(value, 10));
+}
+
+console.log('before')
+//pg1 = '<%= pg %>'
+port = '<%= port %>'
+url = '<%= url %>'
+console.log('xx',port,isInt(port))
+
+if(port && isInt(port)){
+   
+    text = 'Anvio` should open in a new tab, but if not follow this link:'
+    document.getElementById('message').innerHTML = text+" <a href='"+url+"' target='_blank'>"+url+"</a>"
+    delay(url)
+}else{
+   loader.hideLoader();
+    text = "No Ports available to open Anvio`"
+    document.getElementById('message').innerHTML = 'Failed'
+}
+//window.open(url)
+
+
+</script>
