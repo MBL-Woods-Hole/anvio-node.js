@@ -67,7 +67,9 @@ time_stamp_max_diff = 30
 # nothing above this number will get deleted
 #diff_epoch_til_now_limit = 10000
 diff_epoch_til_now_limit = 100000
-def kill_proc(pid):
+def kill_proc(pid, note=''):
+    if note:
+        print('killproc note:',note)
     try:
         print('killing',pid)
         os.system('kill '+str(pid)+' 2>/dev/null')
@@ -97,7 +99,17 @@ def check_date_match(last_line):
     else:
        time.sleep(5.5)
        return 0
+       
+def is_file_updated(fn):
+    last_forder_update_timestamp = os.stat(fn).st_mtime
 
+    last_folder_update_datetime = datetime.datetime.fromtimestamp(last_forder_update_timestamp)
+    current_datetime = datetime.datetime.now()
+
+    difference = current_datetime - last_folder_update_datetime
+    
+    return difference.total_seconds()
+    
 def run(args):
     
     #regExp = '\[([^)]+)\]'  # captures date time in parens
@@ -149,16 +161,16 @@ def run(args):
                                break
                             else:
                                 port = ''
-                                kill_proc(pid)
+                                kill_proc(pid,'port not in ps-aux line')
                     #print('Found port',port)
                     # potential log_file
                     port_log_file = os.path.join(args.file_base,'anvio.'+port+'.log')
                     if port not in port_range:
-                        kill_proc(pid)
+                        kill_proc(pid,'port not in port range')
                         delete_file_by_port(port)
                     elif not os.path.isfile(port_log_file):
                         # kill if no corresponding log file
-                        kill_proc(pid)
+                        kill_proc(pid,'No corresponding log file')
                     elif port in running_ports:
                         running_ports[port].append(pid)
                     else:
@@ -208,68 +220,85 @@ def run(args):
             # kill the process and delete the log file
             
             fn = os.path.join(args.file_base, 'anvio.'+p+'.log')
-            #try:
-            fp = open(fn,'r')
-            for line in fp:
-                line = line.strip()
-            last_line = line
-            #print('last line',last_line)
-            #re_match = re.match(regExp, last_line)
-            re_match = regExpLogDate.search(last_line)
-            #m = check_date_match(last_line)
-            
-            if re_match:
-                re_matchg1 = re_match.group(1)
-                #print('last line',last_line)
-                print('re match',re_matchg1)
-                date_time_obj = datetime.datetime.strptime(re_matchg1, dateformat)
-                difference_seconds = abs((currentdt - date_time_obj).seconds)
-            else:
+            difference_seconds = is_file_updated(fn) # difference from current time
+            print('dif',difference_seconds)
+            if difference_seconds > time_stamp_max_diff:
+                print('Deleting because DIFF between',time_stamp_max_diff)
                 
-                #get the ls -l 
-                #delete_file_by_port(p)
-                #cmd = "ls -l "+fn
-                #-rw-r--r-- 1 root root 809 Dec 21 21:10 anvio.8085.log
-                print('stat',os.stat(fn))
-                #timezone_naive_modified = datetime.fromtimestamp(os.stat(fn).st_mtime)
-                #(t-datetime.datetime(1970,1,1)).total_seconds()
-                print((currentdt-datetime.datetime(1970,1,1)).total_seconds())
-                #output = subprocess.check_output("ls -l "+fn, shell=True)
-                #proc = subprocess.Popen(["ls -l", fn], stdout=subprocess.PIPE, shell=True)
-                # pts = str(output).split()
-#                 print("program output:", pts)
-#                 month = pts[5]
-#                 day_of_month = pts[6]
-#                 seconds_pts = pts[7].split(':')  # '21:10'  9pm
-#                 hr_military = seconds_pts[0]
-#                 mint = seconds_pts[1]
-#                 year = datetime.date.today().year
-#                 m = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
-#                 print('year',year,'month',month,'day',day_of_month,'sec',seconds)
-#                 new Date(year, m[month], day [, hour, minute, second, millisecond ])
-#                 const date = new Date(year, m[month], day_of_month, hr_military, mint, 0);
-                difference_seconds = diff_epoch_til_now_limit + 10
-                print(p,'using artificial time to NOT delete',difference_seconds)
-#                 #epoch = datetime.datetime(1970, 1, 1,0,0,0)
-#                 epoch = datetime.datetime(1970, 1, 1)
-#                 
-#                 print(p,'using artificial time to delete',epoch)
-#                 #date_time_obj = epoch.replace(tzinfo=pytz.UTC)
-#                 date_time_obj = currentdt - timedelta(days=20)
-#                 difference_seconds = 500  # Must delete
-            # 69434 roughly diff between now and epoch
-            
-            print('Port:',p,'(Diff:',difference_seconds,'secs)')
-            
-            if difference_seconds > time_stamp_max_diff and difference_seconds < diff_epoch_til_now_limit:
-                print('Deleting because DIFF between',time_stamp_max_diff,'and',diff_epoch_til_now_limit)
-                logFileName = os.path.join(args.file_base, 'anvio.'+p+'.log')
                 
-                delete_file(logFileName)
+                delete_file(fn)
                 
                 for pid in running_ports[p]:
                     #print('pid',pid)
-                    kill_proc(pid)
+                    kill_proc(pid,'long time sep logfile from proc')
+                 
+#             #try:
+#             fp = open(fn,'r')
+#             for line in fp:
+#                 line = line.strip()
+#             last_line = line
+#             #print('last line',last_line)
+#             #re_match = re.match(regExp, last_line)
+#             re_match = regExpLogDate.search(last_line)
+#             #m = check_date_match(last_line)
+#             
+#             if re_match:
+#                 re_matchg1 = re_match.group(1)
+#                 #print('last line',last_line)
+#                 print('re match',re_matchg1)
+#                 date_time_obj = datetime.datetime.strptime(re_matchg1, dateformat)
+#                 difference_seconds = abs((currentdt - date_time_obj).seconds)
+#             else:
+#                 
+#                 #get the ls -l 
+#                 #delete_file_by_port(p)
+#                 #cmd = "ls -l "+fn
+#                 #-rw-r--r-- 1 root root 809 Dec 21 21:10 anvio.8085.log
+#                 z = os.stat(fn)
+#                 print('stat',os.stat(fn))
+#                 update_time = z.st_mtime 
+#                 
+#                 difference_seconds = is_file_updated(fn)
+#                 print(p,fn,'using os.stat.mtime',difference_seconds)
+#                 #timezone_naive_modified = datetime.fromtimestamp(os.stat(fn).st_mtime)
+#                 #(t-datetime.datetime(1970,1,1)).total_seconds()
+#                 #print((currentdt-datetime.datetime(1970,1,1)).total_seconds())
+#                 #output = subprocess.check_output("ls -l "+fn, shell=True)
+#                 #proc = subprocess.Popen(["ls -l", fn], stdout=subprocess.PIPE, shell=True)
+#                 # pts = str(output).split()
+# #                 print("program output:", pts)
+# #                 month = pts[5]
+# #                 day_of_month = pts[6]
+# #                 seconds_pts = pts[7].split(':')  # '21:10'  9pm
+# #                 hr_military = seconds_pts[0]
+# #                 mint = seconds_pts[1]
+# #                 year = datetime.date.today().year
+# #                 m = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}
+# #                 print('year',year,'month',month,'day',day_of_month,'sec',seconds)
+# #                 new Date(year, m[month], day [, hour, minute, second, millisecond ])
+# #                 const date = new Date(year, m[month], day_of_month, hr_military, mint, 0);
+#                 #difference_seconds = diff_epoch_til_now_limit + 10
+#                 #print(p,'using artificial time to NOT delete',difference_seconds)
+# #                 #epoch = datetime.datetime(1970, 1, 1,0,0,0)
+# #                 epoch = datetime.datetime(1970, 1, 1)
+# #                 
+# #                 print(p,'using artificial time to delete',epoch)
+# #                 #date_time_obj = epoch.replace(tzinfo=pytz.UTC)
+# #                 date_time_obj = currentdt - timedelta(days=20)
+# #                 difference_seconds = 500  # Must delete
+#             # 69434 roughly diff between now and epoch
+#             
+#             print('Port:',p,'(Diff:',difference_seconds,'secs)')
+#             
+#             if difference_seconds > time_stamp_max_diff and difference_seconds < diff_epoch_til_now_limit:
+#                 print('Deleting because DIFF between',time_stamp_max_diff,'and',diff_epoch_til_now_limit)
+#                 logFileName = os.path.join(args.file_base, 'anvio.'+p+'.log')
+#                 
+#                 delete_file(logFileName)
+#                 
+#                 for pid in running_ports[p]:
+#                     #print('pid',pid)
+#                     kill_proc(pid)
                 
                     
                     # get 

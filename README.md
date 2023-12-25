@@ -24,3 +24,5 @@ on local host and other server
 Enter a running container:
    docker exec -it <container_name> bash
    docker exec -it anvio bash
+   
+cd anvio/pangenomes

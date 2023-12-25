@@ -37,7 +37,7 @@ app.get("/anvio", function(req,res){
       return res.send("Bad port: '"+req.query.port+"'")
     }
     docker_params = ['exec','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
-    
+    // docker exec anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
     docker_params.push('--server-only')
     docker_params.push('--debug')
     console.log('docker '+docker_params.join(' '))
@@ -51,7 +51,7 @@ app.get("/anvio", function(req,res){
      //console.log('proc',proc)
      //url = 'http://localhost:'+port
      //let url = 'http://localhost:3010/anvio?port='+port+'&pg='+pg
-     let url = CFG.URL_BASE+'/'+port
+     let url = CFG.URL_BASE+':'+port
      //return res.send(url)
      res.render('pages/index', {
         title: 'HOMD :: ANVIO',
