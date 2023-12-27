@@ -18,7 +18,11 @@ app.use(express.static("public"));
 app.get("/", function(req,res){
   res.send("Welcome to the world of science fiction, conflicting theories, fantasies and some eccentric nerds!")
 });
-
+app.get("/pg", function(req,res){
+    console.log('IN PG')
+    
+    
+})
 app.get("/anvio", function(req,res){
    
     console.log('In Anvio/:port')
@@ -43,7 +47,7 @@ app.get("/anvio", function(req,res){
        return
     }
     docker_params = ['exec','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
-    // docker exec anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
+    // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
     docker_params.push('--server-only')
     docker_params.push('--debug')
     console.log('docker '+docker_params.join(' '))
