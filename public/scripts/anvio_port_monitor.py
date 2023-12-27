@@ -60,7 +60,7 @@ def is_port_in_use(port: int) -> bool:
 port_range = ['8080','8081','8082','8083','8084','8085']#,'8086','8087','8088','8089']
 #port_range = ['8080','8081','8082','8083']
 sleep_time = 6
-time_stamp_max_diff = 30
+time_stamp_max_diff = 50
 # 69434 roughly diff between now and epoch
 # this diff presents before log file is establised
 # used to prevent premature deletion
@@ -114,16 +114,16 @@ def run(args):
     
     #regExp = '\[([^)]+)\]'  # captures date time in parens
     #regExp = '\[(.*?)\]'  # captures date time in parens
-    regExpLogDate = re.compile(r".*\[\s?(\d+/\D+?/.*?)\]")
-    dateformat = '%d/%b/%Y:%H:%M:%S %z'
+    #regExpLogDate = re.compile(r".*\[\s?(\d+/\D+?/.*?)\]")
+    #dateformat = '%d/%b/%Y:%H:%M:%S %z'
     log_watch = []
     # [05/Dec/2023:22:18:04 +0000]
     #re_pattern = '([\d\.?]+) - - \[(.*?)\] "(.*?)" (.*?) (.*?) "(.*?)" "(.*?)"'
     # 172.16.0.3 - - [25/Sep/2002:14:04:19 +0200]
     while 1:
         sleep(sleep_time)
-        dt = datetime.datetime.now()
-        currentdt = dt.replace(tzinfo=timezone.utc)
+        #dt = datetime.datetime.now()
+        #currentdt = dt.replace(tzinfo=timezone.utc)
         running_ports = {}
         running_ports_keys = []
         log_ports = {}
@@ -186,7 +186,7 @@ def run(args):
         for logFileName in log_files:
             
             p = os.path.basename(logFileName).split('.')[1]
-            print('tport',p)
+            #print('tport',p)
             # what if "anvio.0.log" ?
             if p not in port_range:
                 delete_file(logFileName)
@@ -205,6 +205,8 @@ def run(args):
                     
                     
         log_ports_keys = list(log_ports.keys())
+        log_ports_keys.sort()
+        running_ports_keys.sort()
         print('running_ports',running_ports_keys)
         print('log_ports',log_ports_keys)
         open_ports = list(set(port_range) - set(log_ports_keys))
@@ -214,6 +216,7 @@ def run(args):
         fp.write(str(open_ports))
         fp.close()
         #time.sleep(5.5)
+        
         for p in log_ports_keys:
             # read the log files and if the time stamp is not current 
             # or there is no time stamp
@@ -221,10 +224,9 @@ def run(args):
             
             fn = os.path.join(args.file_base, 'anvio.'+p+'.log')
             difference_seconds = is_file_updated(fn) # difference from current time
-            print('dif',difference_seconds)
+            print(p,'dif',difference_seconds)
             if difference_seconds > time_stamp_max_diff:
                 print('Deleting because DIFF between',time_stamp_max_diff)
-                
                 
                 delete_file(fn)
                 

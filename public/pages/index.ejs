@@ -24,7 +24,21 @@
     /* height: 250px; */
     border-radius: 5px;
 }
-
+#header{
+   background:lightblue;
+   height:30px;
+   width:100%;
+   font-size:22px;
+   padding:30px 0 30px 0;
+   margin-top:20px;
+   text-align:center;
+}
+#loading{
+   padding: 20px;
+}
+#message{
+   padding: 20px;
+}
 body{
    paddong: 50px;
    margin:0;
@@ -37,16 +51,20 @@ body{
 </head>
 
 <body>
-<div>
-  <%= pg %>
-  <br><br>
-  Loading.... <%= url %>
-</div>
-<br><br>[<span id='message'>Info</span>]
+
+  <div id='header'>Selected Pangenome: "<%= pg %>"</div>
+  
+  <div id='loading'></div>
+
+  <div id='message'>Info</div>
+
 </body>
 </html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
 <script>
+
 console.log('start here JS')
 var loader_delay = 10000;
 var loader = {
@@ -73,12 +91,6 @@ var loader = {
         jQuery( '.loading-overlay-image-container' ).hide();
     }
 }
-$( function() { // do things when the document is ready
-    // initialize our loader overlay
-    console.log('onload')
-    loader.initialize();
-    loader.showLoader();
-});
 function delay (URL) {
     setTimeout( function() { 
         window.open(URL,'_self') 
@@ -91,21 +103,34 @@ function isInt(value) {
          !isNaN(parseInt(value, 10));
 }
 
-console.log('before')
-//pg1 = '<%= pg %>'
 port = '<%= port %>'
 url = '<%= url %>'
-console.log('xx',port,isInt(port))
-
-if(port && isInt(port)){
-   
-    text = 'Anvio` should open in a new tab, but if not follow this link:'
-    document.getElementById('message').innerHTML = text+" <a href='"+url+"' target='_blank'>"+url+"</a>"
-    delay(url)
+if(port != 0){
+   console.log('NOPORT',port)
 }else{
-   loader.hideLoader();
-    text = "No Ports available to open Anvio`"
-    document.getElementById('message').innerHTML = 'Failed'
+  console.log(' GoodPORT',port)
+}
+if(port != 0){
+  //$( function() { // do things when the document is ready
+    // initialize our loader overlay
+    console.log('onload')
+    document.getElementById('loading').innerHTML = 'Loading...' +url
+    loader.initialize();
+    loader.showLoader();
+  //});
+  if(isInt(port)){
+     text = 'Anvio` should open in a new tab, but if not follow this link:'
+     document.getElementById('message').innerHTML = text+" <a href='"+url+"' target='_blank'>"+url+"</a>"
+     delay(url)
+  }else{
+    loader.hideLoader();
+    text = "Anvio` port error: "+port.toString()
+    document.getElementById('message').innerHTML = 'Failed: '+text
+  }
+}else{
+    loader.hideLoader();
+    text = "All Anvio` ports are in use. Try again later."
+    document.getElementById('message').innerHTML = 'Failed: '+text
 }
 //window.open(url)
 

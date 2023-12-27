@@ -33,6 +33,14 @@ app.get("/anvio", function(req,res){
     let port = anvio_ports()
     if(!isInt(port)){
       return res.send("Bad port: '"+req.query.port+"'")
+    }else if(port == 0){
+       res.render('pages/index', {
+        title: 'HOMD :: ANVIO',
+        pg: pg,
+        port:0,
+        url:''
+       })
+       return
     }
     docker_params = ['exec','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
@@ -64,7 +72,6 @@ app.get("/anvio", function(req,res){
 });
 function anvio_ports(){
     let open_ports, op
-    let default_open_ports = [8080,8081,8082,8083,8084,8085] //port_range
     // file to be present in docker 'anvio' container
     
     var open_ports_file = path.join(CFG.PATH_TO_PANGENOMES,'open_ports.txt')
@@ -72,7 +79,7 @@ function anvio_ports(){
       op = fs.readFileSync(open_ports_file, 'utf8').toString()
       open_ports = JSON.parse(op.replaceAll('\'', '"'))
     } catch (err) {
-      open_ports = default_open_ports  // give it a try - it may work
+      open_ports = CFG.DEFAULT_OPEN_PORTS  // give it a try - it may work
     }
     
     if(open_ports.length > 0){
