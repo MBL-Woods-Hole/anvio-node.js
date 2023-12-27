@@ -330,7 +330,7 @@ if __name__ == '__main__':
     
     
     args = parser.parse_args()    
-    if args.host == 'anvio-homd':
+    if args.host == 'homd_dev' or args.host == 'homd_prod':
         args.file_base = '/home/ubuntu/anvio/pangenomes/'
     elif args.host == 'localhost':
         args.file_base = '/Users/avoorhis/programming/github/pangenomes/'
