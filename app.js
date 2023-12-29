@@ -70,9 +70,8 @@ app.get("/anvio", function(req,res){
      //return res.send('Good port: '+port.toString())
    
 });
-app.get('/*', function(req, res, next){  // must be the last get
-    console.warn('req.params',req.params);
-    console.warn('req.uri',req.uri);
+app.get('/p8080', function(req, res, next){  // must be the last get
+    console.log('In p8080')
     
 })
 function anvio_ports(){
