@@ -18,11 +18,7 @@ app.use(express.static("public"));
 app.get("/", function(req,res){
   res.send("Welcome to the world of science fiction, conflicting theories, fantasies and some eccentric nerds!")
 });
-app.get("/pg", function(req,res){
-    console.log('IN PG')
-    
-    
-})
+
 app.get("/anvio", function(req,res){
    
     console.log('In Anvio/:port')
@@ -61,19 +57,24 @@ app.get("/anvio", function(req,res){
      //console.log('proc',proc)
      //url = 'http://localhost:'+port
      //let url = 'http://localhost:3010/anvio?port='+port+'&pg='+pg
-     let url = CFG.URL_BASE+':'+port
+     let anviourl = CFG.URL_BASE+':'+port
      //return res.send(url)
      res.render('pages/index', {
         title: 'HOMD :: ANVIO',
         pg: pg,
-        port:port,
-        url:url
+        port: port,
+        url: anviourl
      })
          
      
      //return res.send('Good port: '+port.toString())
    
 });
+app.get('/*', function(req, res, next){  // must be the last get
+    console.warn('req.params',req.params);
+    console.warn('req.uri',req.uri);
+    
+})
 function anvio_ports(){
     let open_ports, op
     // file to be present in docker 'anvio' container
@@ -100,17 +101,8 @@ function isInt(value) {
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
 } 
-// routing plot.ejs file
-// this simply means calling localhost:3000/plot will render this page in our app
-app.get("/plot", function(req,res){
-  res.render("./pages/plot");
-});
 
-// routing cast.ejs file 
-//this simply means calling localhost:3000/cast will render this page in our app
-app.get("/cast", function(req,res){
-  res.render("./pages/cast")
-});
+
 
 app.listen(3010, function(){
         console.log("SERVER STARTED ON localhost:3010");     

@@ -2,7 +2,7 @@
 <style>
  .loading-overlay {
     display: none;
-    background: rgba( 26, 26, 26, 0.7 );
+    background: rgba( 26, 26, 26, 0.5 );
     position: fixed;
     width: 100%;
     height: 100%;
@@ -40,7 +40,7 @@
    padding: 20px;
 }
 body{
-   paddong: 50px;
+   padding: 0px;
    margin:0;
    font-size:16px;
 }
@@ -54,9 +54,10 @@ body{
 
   <div id='header'>Selected Pangenome: "<%= pg %>"</div>
   
-  <div id='loading'></div>
+    <div id='loading'></div>
 
-  <div id='message'>Info</div>
+    <div id='message'>Info</div>
+  
 
 </body>
 </html>
@@ -105,6 +106,7 @@ function isInt(value) {
 
 port = '<%= port %>'
 url = '<%= url %>'
+// http://localhost:8080
 if(port != 0){
    console.log('NOPORT',port)
 }else{
