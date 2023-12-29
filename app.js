@@ -70,7 +70,7 @@ app.get("/anvio", function(req,res){
      //return res.send('Good port: '+port.toString())
    
 });
-app.get('/p8080', function(req, res){  // must be the last get
+app.get('/target', function(req, res){  // must be the last get
     console.log('In p8080')
     
 })
