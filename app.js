@@ -58,8 +58,8 @@ app.get("/", function(req,res){
      //console.log('proc',proc)
      //url = 'http://localhost:'+port
      //let url = 'http://localhost:3010/anvio?port='+port+'&pg='+pg
-     let anviourl = CFG.URL_BASE+'/'+port
-     //return res.send(url)
+     let anviourl = CFG.URL_BASE+'/'+port +'/'
+     console.log('URL',anviourl)
      res.render('pages/index', {
         title: 'HOMD :: ANVIO',
         pg: pg,
