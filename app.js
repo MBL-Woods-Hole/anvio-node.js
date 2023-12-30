@@ -91,7 +91,7 @@ function anvio_ports(){
       //console.log('err1a',op.replaceAll('\'', '"'))
       console.log('err1b',JSON.parse(op),typeof JSON.parse(op))
       //open_ports = JSON.parse(op.replaceAll('\'', '"'))
-      open_ports = JSON.parse(op.replace(/\'/g, '"');
+      open_ports = JSON.parse(op.replace(/\'/g, '"'));
       console.log('err2',open_ports)
       console.log('OK Using ports from open_ports_file')
     } catch (err) {
