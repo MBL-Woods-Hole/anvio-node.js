@@ -88,9 +88,10 @@ function anvio_ports(){
     try{
       op = fs.readFileSync(open_ports_file, 'utf8').toString()
       console.log('err1',op)
-      console.log('err1a',op.replaceAll('\'', '"'))
+      //console.log('err1a',op.replaceAll('\'', '"'))
       console.log('err1b',JSON.parse(op),typeof JSON.parse(op))
-      open_ports = JSON.parse(op.replaceAll('\'', '"'))
+      //open_ports = JSON.parse(op.replaceAll('\'', '"'))
+      open_ports = JSON.parse(op.replace(/\'/g, '"');
       console.log('err2',open_ports)
       console.log('OK Using ports from open_ports_file')
     } catch (err) {
