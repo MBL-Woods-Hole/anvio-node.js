@@ -160,17 +160,18 @@ def run(args):
                                port = p
                                break
                             else:
-                                port = ''
-                                kill_proc(pid,'port not in ps-aux line')
+                                pass
+                                #port = ''
+                                #kill_proc(pid,'port not in ps-aux line')
                     #print('Found port',port)
                     # potential log_file
                     port_log_file = os.path.join(args.file_base,'anvio.'+port+'.log')
                     if port not in port_range:
-                        kill_proc(pid,'port not in port range')
+                        kill_proc(pid,'port ('+str(port)+') not in port range')
                         delete_file_by_port(port)
                     elif not os.path.isfile(port_log_file):
                         # kill if no corresponding log file
-                        kill_proc(pid,'No corresponding log file')
+                        kill_proc(pid,'No corresponding log file for '+str(port))
                     elif port in running_ports:
                         running_ports[port].append(pid)
                     else:
