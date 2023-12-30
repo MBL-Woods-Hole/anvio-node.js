@@ -15,11 +15,12 @@ app.set('views', 'public');
 app.use(express.static("public"));
 //home route
 
-app.get("/", function(req,res){
-  res.send("Welcome to the world of science fiction, conflicting theories, fantasies and some eccentric nerds!")
-});
+// app.get("/", function(req,res){
+//   res.send("Welcome to the world of science fiction, conflicting theories, fantasies and some eccentric nerds!")
+// });
 
-app.get("/anvio", function(req,res){
+// nginx converts anvio.homd.org/anvio/ to anvio.homd.org/
+app.get("/", function(req,res){
    
     console.log('In Anvio/:port')
     console.log('q',req.query)
@@ -69,6 +70,10 @@ app.get("/anvio", function(req,res){
      
      //return res.send('Good port: '+port.toString())
    
+});
+router.get('/app', function (req, res) {
+  req.logout();
+  res.redirect('/app/login');
 });
 app.get('/target', function(req, res){  // must be the last get
     console.log('In p8080')
