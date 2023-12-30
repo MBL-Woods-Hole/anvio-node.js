@@ -123,8 +123,8 @@ if(port != 0){
   if(isInt(port)){
      text = 'Anvio` should open in a new tab, but if not follow this link:'
      document.getElementById('message').innerHTML = text+" <a href='"+url+"' target='_blank'>"+url+"</a>"
-     delay(url)
-     window.location.reload();
+     //delay(url)
+     window.open(URL) 
   }else{
     loader.hideLoader();
     text = "Anvio` port error: "+port.toString()
