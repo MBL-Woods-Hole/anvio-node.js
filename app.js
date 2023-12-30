@@ -94,7 +94,7 @@ function anvio_ports(){
       console.log('err2',open_ports)
       console.log('OK Using ports from open_ports_file')
     } catch (err) {
-      console.log('Err: Using default open ports from config.js')
+      console.log('Err: Using default open ports from config.js',err)
       open_ports = CFG.DEFAULT_OPEN_PORTS  // give it a try - it may work
     }
     
