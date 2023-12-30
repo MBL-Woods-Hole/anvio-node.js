@@ -84,6 +84,7 @@ function anvio_ports(){
     // file to be present in docker 'anvio' container
     
     var open_ports_file = path.join(CFG.PATH_TO_PANGENOMES,'open_ports.txt')
+    console.log('op file path',open_ports_file)
     try{
       op = fs.readFileSync(open_ports_file, 'utf8').toString()
       open_ports = JSON.parse(op.replaceAll('\'', '"'))
