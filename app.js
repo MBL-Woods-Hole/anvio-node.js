@@ -71,14 +71,14 @@ app.get("/", function(req,res){
      //return res.send('Good port: '+port.toString())
    
 });
-router.get('/app', function (req, res) {
-  req.logout();
-  res.redirect('/app/login');
-});
-app.get('/target', function(req, res){  // must be the last get
-    console.log('In p8080')
-    
-})
+// app.get('/app', function (req, res) {
+//   req.logout();
+//   res.redirect('/app/login');
+// });
+// app.get('/target', function(req, res){  // must be the last get
+//     console.log('In p8080')
+//     
+// })
 function anvio_ports(){
     let open_ports, op
     // file to be present in docker 'anvio' container
