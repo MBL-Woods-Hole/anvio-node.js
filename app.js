@@ -87,7 +87,9 @@ function anvio_ports(){
     console.log('op file path',open_ports_file)
     try{
       op = fs.readFileSync(open_ports_file, 'utf8').toString()
+      console.log('err1',op)
       open_ports = JSON.parse(op.replaceAll('\'', '"'))
+      console.log('err2',open_ports)
       console.log('OK Using ports from open_ports_file')
     } catch (err) {
       console.log('Err: Using default open ports from config.js')
