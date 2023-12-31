@@ -67,7 +67,7 @@ body{
 <script>
 
 console.log('start here JS')
-var loader_delay = 13000;
+var loader_delay = 10000;
 var loader = {
     
     initialize : function () {
@@ -98,6 +98,12 @@ function delay (URL) {
         loader.hideLoader();
     }, loader_delay );
 }
+function delay2 () {
+    setTimeout( function() { 
+        //window.open(URL,'_self') 
+        loader.hideLoader();
+    }, loader_delay );
+}
 function isInt(value) {
   return !isNaN(value) && 
          parseInt(Number(value)) == value && 
@@ -124,7 +130,8 @@ if(port != 0){
      text = 'Anvio` should open in a new tab, but if not follow this link:'
      document.getElementById('message').innerHTML = text+" <a href='"+url+"' target='_blank'>"+url+"</a>"
      //delay(url)
-     window.open(URL) 
+     //window.open(URL) 
+     delay2()
   }else{
     loader.hideLoader();
     text = "Anvio` port error: "+port.toString()
