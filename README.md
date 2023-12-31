@@ -13,10 +13,12 @@ How to start docker anvio
  - list containers:
      docker ps -a
  - kill a container:
-     docker kill 06a1c7bc96ab <CONTAINER ID>
+     docker kill 06a1c7bc96ab <container_id>
  - stop docker:
     docker ps
     docker stop <container_id>
+ - start a stopped container:
+    docker start <container_id>
     
 Start docker daemon on ubuntu: https://docs.docker.com/config/daemon/start/
    'sudo systemctl start docker'

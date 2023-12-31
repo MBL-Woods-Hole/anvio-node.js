@@ -97,8 +97,13 @@ function anvio_ports(){
       //console.log('err1b',JSON.parse(op),typeof JSON.parse(op))
       //open_ports = JSON.parse(op.replaceAll('\'', '"'))
       open_ports = JSON.parse(op.replace(/\'/g, '"'));
+      if(! open_ports || open_ports.length === 0){
+         open_ports = CFG.DEFAULT_OPEN_PORTS 
+      }else{
+         console.log('OK Using ports from open_ports_file')
+      }
       console.log('err2',open_ports)
-      console.log('OK Using ports from open_ports_file')
+      
     } catch (err) {
       console.log('Err: Using default open ports from config.js',err)
       open_ports = CFG.DEFAULT_OPEN_PORTS  // give it a try - it may work
