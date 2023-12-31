@@ -171,7 +171,8 @@ def run(args):
                         delete_file_by_port(port)
                     elif not os.path.isfile(port_log_file):
                         # kill if no corresponding log file
-                        kill_proc(pid,'No corresponding log file for '+str(port))
+                        # kill_proc(pid,'No corresponding log file for '+str(port))
+                        pass
                     elif port in running_ports:
                         running_ports[port].append(pid)
                     else:
