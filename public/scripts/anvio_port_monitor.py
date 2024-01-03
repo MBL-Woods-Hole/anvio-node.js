@@ -195,8 +195,8 @@ def run(args):
             else:
                 if os.path.isfile(logFileName):
                     #print('found',logFileName1)
-                    grep_cmd = ["grep 'view at http://127.0.0.1:80' "+logFileName
-                    result = subprocess.run(['grep', '"http://127.0.0.1:80"',logFileName], stdout=subprocess.PIPE)
+                    grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
+                    result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
                     print('grepcmd',grep_cmd)
                     print('grep result',result)
                     
