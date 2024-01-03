@@ -195,6 +195,11 @@ def run(args):
             else:
                 if os.path.isfile(logFileName):
                     #print('found',logFileName1)
+                    grep_cmd = ["grep 'view at http://127.0.0.1:80' "+logFileName
+                    result = subprocess.run(['grep', '"http://127.0.0.1:80"',logFileName], stdout=subprocess.PIPE)
+                    print('grepcmd',grep_cmd)
+                    print('grep result',result)
+                    
                     if p in running_ports_keys:
                         log_ports[p] = 1
                     else:
