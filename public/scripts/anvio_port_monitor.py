@@ -196,7 +196,8 @@ def run(args):
                 if os.path.isfile(logFileName):
                     #print('found',logFileName1)
                     grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
-                    result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
+                    #result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
+                    result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
                     print('grepcmd',grep_cmd)
                     print('grep result',result)
                     
