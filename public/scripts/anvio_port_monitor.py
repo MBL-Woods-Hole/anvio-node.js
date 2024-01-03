@@ -200,7 +200,7 @@ def run(args):
                     #result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
                     result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
                     #print('grepcmd',grep_cmd)
-                    print('grep result',str(result.strip()))
+                    print('grep result',(result.strip()).decode('utf-8'))
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1
