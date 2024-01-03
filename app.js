@@ -43,11 +43,11 @@ app.get("/", function(req,res){
        })
        return
     }
-    docker_params = ['exec','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
+    docker_params = ['exec','-i','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
     docker_params.push('--server-only')
     docker_params.push('--debug')
-    console.log('docker '+docker_params.join(' '))
+    console.log(CFG.DOCKERPATH+' '+docker_params.join(' '))
     var out = fs.openSync(path.join(CFG.PATH_TO_PANGENOMES,'anvio.'+port+'.log'), 'w');
     var proc = spawn(CFG.DOCKERPATH, docker_params, {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
@@ -98,9 +98,7 @@ function anvio_ports(){
       //open_ports = JSON.parse(op.replaceAll('\'', '"'))
       open_ports = JSON.parse(op.replace(/\'/g, '"'));
       if(! open_ports || open_ports.length === 0){
-         open_ports = CFG.DEFAULT_OPEN_PORTS 
-      }else{
-         console.log('OK Using ports from open_ports_file')
+         return 0
       }
       console.log('err2',open_ports)
       
