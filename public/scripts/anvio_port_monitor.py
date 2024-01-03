@@ -195,10 +195,11 @@ def run(args):
             else:
                 if os.path.isfile(logFileName):
                     #print('found',logFileName1)
-                    grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
+                    #grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
                     #result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
-                    result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
-                    print('grepcmd',grep_cmd)
+                    #result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
+                    result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
+                    #print('grepcmd',grep_cmd)
                     print('grep result',result)
                     
                     if p in running_ports_keys:
