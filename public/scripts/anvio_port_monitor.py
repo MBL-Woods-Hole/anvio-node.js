@@ -202,6 +202,9 @@ def run(args):
                         result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
                         #print('grepcmd',grep_cmd)
                         print(p,'grep result',(result.strip()).decode('utf-8'))
+                        fpup = open(os.path.join(args.file_base, p+'.up'), "w")
+                        fpup.write(p+'up')
+                        fpup.close()
                     except subprocess.CalledProcessError as e:
                         print(p,'grep result')
                     
