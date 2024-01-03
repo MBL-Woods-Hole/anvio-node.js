@@ -203,8 +203,7 @@ def run(args):
                         #print('grepcmd',grep_cmd)
                         print(p,'grep result',(result.strip()).decode('utf-8'))
                     except subprocess.CalledProcessError as e:
-                        raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-                    
+                        print(p,'grep result')
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1
