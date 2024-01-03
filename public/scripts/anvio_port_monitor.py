@@ -198,9 +198,13 @@ def run(args):
                     #grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
                     #result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
                     #result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
-                    result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
-                    #print('grepcmd',grep_cmd)
-                    print(p,'grep result',(result.strip()).decode('utf-8'))
+                    try:
+                        result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
+                        #print('grepcmd',grep_cmd)
+                        print(p,'grep result',(result.strip()).decode('utf-8'))
+                    except subprocess.CalledProcessError as e:
+                        raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
+                    
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1
