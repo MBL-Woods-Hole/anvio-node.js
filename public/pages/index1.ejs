@@ -56,7 +56,7 @@ body{
   
     <div id='loading'></div>
 
-    <div id='message'>Loading port <%= port %></div>
+    <div id='message'>Info</div>
   
 
 </body>
@@ -127,35 +127,20 @@ if(port != 0){
     loader.showLoader();
 
   if(isInt(port)){
-    args = {}
-    args.port = port
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", 'wait_on_anvio', false);
-    xmlhttp.setRequestHeader("Content-type","application/json");
-    xmlhttp.onreadystatechange = function() {
-    if (xmlhttp.readyState == 4 ) {
-        var response = xmlhttp.responseText;
-        console.log('response',response)
-        if(response == '1'){
-            //loader.hideLoader();
-            window.open(url,'_self') 
-            //window.open(url,'_blank') 
-        }else{
-           text = "Anvio` port error: "+port.toString()
-           document.getElementById('message').innerHTML = 'Failed: '+text
-        }
-       }
-    };
-    xmlhttp.send(JSON.stringify(args));
+     text = 'Anvio` should open in a new tab, but if not follow this link:'
+     document.getElementById('message').innerHTML = text+" <a href='"+url+"'>"+url+"</a>"
+     //delay(url)
+     //window.open(URL) 
+     delay2()
   }else{
     loader.hideLoader();
     text = "Anvio` port error: "+port.toString()
-    document.getElementById('message').innerHTML = text
+    document.getElementById('message').innerHTML = 'Failed: '+text
   }
 }else{
     loader.hideLoader();
     text = "All Anvio` ports are in use. Try again later."
-    document.getElementById('message').innerHTML = text
+    document.getElementById('message').innerHTML = 'Failed: '+text
 }
 
 

@@ -1,18 +1,29 @@
-const express=require("express"); 
+const express=require("express");
+const router = express.Router(); 
 const path = require('path');
 global.app_root = path.resolve(__dirname);
 const CFG     = require(app_root + '/config/config')
 const { exec, execSync, spawn } = require("child_process")
 const fs   = require('fs');
-
+var bodyParser = require('body-parser')
 const app= express();        //binds the express module to 'app'
-
+// create application/json parser
+app.use(bodyParser.urlencoded({
+    extended: false,         // allows for richer json like experience https://www.npmjs.com/package/qs#readme
+    limit: '50mb',          // size of body
+    parameterLimit: 100000 // number of parameters
+}));
+app.use(bodyParser.json());
+ 
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
 //setting the view engine as EJS. 
 app.set('view engine', 'ejs');
 //roots the views directory to public
 app.set('views', 'public');
 //tells express that the public folder is the static folder
 app.use(express.static("public"));
+
 //home route
 
 // app.get("/", function(req,res){
@@ -38,7 +49,7 @@ app.get("/", function(req,res){
        res.render('pages/index', {
         title: 'HOMD :: ANVIO',
         pg: pg,
-        port:0,
+        port: 0,
         url:''
        })
        return
@@ -75,6 +86,23 @@ app.get("/", function(req,res){
      
      //return res.send('Good port: '+port.toString())
    
+});
+
+app.post("/wait_on_anvio", async(req,res)=>{
+    console.log('in wait')
+    console.log('req.body',req.body)
+    up_file = path.join(CFG.PATH_TO_PANGENOMES,req.body.port+'.up')
+    // continue to look for file up to 2 min
+    const maxTimeToCheck = 60000; //60 second
+    const isFile = await holdBeforeFileExists(up_file, maxTimeToCheck);
+    console.log('file',isFile,up_file)
+    if(isFile){
+        res.send('1')
+    } else {
+        res.send('Failed to start anvio pangenome. Or too long to create an UpFile');
+    }
+    //res.send('okay')
+
 });
 // app.get('/app', function (req, res) {
 //   req.logout();
@@ -121,7 +149,37 @@ function isInt(value) {
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
 } 
+/**
+*
+* @param {String} filePath
+* @param {Number} timeout
+* @returns {Promise<Boolean>}
+https://stackoverflow.com/questions/26165725/nodejs-check-file-exists-if-not-wait-till-it-exist
+*/
+const holdBeforeFileExists = async (filePath, timeout) => {
+  timeout = timeout < 1000 ? 1000 : timeout
+  try {
+    var nom = 0
+      return new Promise(resolve => {
+        var inter = setInterval(() => {
+          nom = nom + 100
+          if (nom >= timeout) {
+            clearInterval(inter)
+            //maybe exists, but my time is up! 
+            resolve(false)
+          }
 
+          if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
+            clearInterval(inter)
+            //clear timer, even though there's still plenty of time left
+            resolve(true)
+          }
+        }, 100)
+      })
+  } catch (error) {
+    return false
+  }
+}
 
 
 app.listen(3010, function(){

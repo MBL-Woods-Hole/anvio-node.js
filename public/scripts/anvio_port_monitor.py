@@ -183,15 +183,18 @@ def run(args):
         
         
         # now look for and parse log files
-        log_files = glob.glob(os.path.join(args.file_base,'anvio.*.log'))
+        log_files = glob.glob(os.path.join(args.file_base, 'anvio.*.log'))
         #print('og_files',log_files)
         for logFileName in log_files:
             
             p = os.path.basename(logFileName).split('.')[1]
+            upfileName = os.path.join(args.file_base, p+'.up')
+            
             #print('tport',p)
             # what if "anvio.0.log" ?
             if p not in port_range:
                 delete_file(logFileName)
+                delete_file(upFileName)
             else:
                 if os.path.isfile(logFileName):
                     #print('found',logFileName1)
@@ -213,6 +216,7 @@ def run(args):
                     else:
                         print('deleting this log file (no anvio running)',p)
                         delete_file(logFileName)
+                        delete_file(upFileName)
                         if p in log_ports:
                             log_ports.pop(p)
                 else:
@@ -237,14 +241,15 @@ def run(args):
             # or there is no time stamp
             # kill the process and delete the log file
             
-            fn = os.path.join(args.file_base, 'anvio.'+p+'.log')
-            difference_seconds = is_file_updated(fn) # difference from current time
+            pfn = os.path.join(args.file_base, 'anvio.'+p+'.log')
+            ufn = os.path.join(args.file_base, p+'.up')
+            difference_seconds = is_file_updated(pfn) # difference from current time
             print(p,'dif',difference_seconds)
             if difference_seconds > time_stamp_max_diff:
                 print('Deleting because DIFF between',time_stamp_max_diff)
                 
-                delete_file(fn)
-                
+                delete_file(pfn)
+                delete_file(ufn)
                 for pid in running_ports[p]:
                     #print('pid',pid)
                     kill_proc(pid,'long time sep logfile from proc')

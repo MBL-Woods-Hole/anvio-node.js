@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title><%= title %></title>
+  
+  
+</head>
+
+<body>
+    <div class="se-pre-con"></div>
+  
+    <div id='loading'></div>
+
+    <div id='message'>Info</div>
+
+</body>
+</html>
+<script src="/assets/jquery-2.1.1.min.js"></script>
+
+<script>
+
+  
+    //paste this code under the head tag or in a separate js file.
+	// Wait for window load
+	$(window).load(function() {
+		// Animate loader off screen
+		$(".se-pre-con").fadeOut("slow");;
+	});
+
+    console.log('start here JS')
+
+    port = '<%= port %>'
+    url = '<%= url %>'
+    if(!port || port == '0'){
+       document.getElementById('message').innerHTML = 'no port found'
+    }
+    // here we want to wait serverside for the 8080.up file to appear
+    args = {}
+    args.port = port
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("POST", 'wait_on_anvio', false);
+    xmlhttp.setRequestHeader("Content-type","application/json");
+    xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 ) {
+        var response = xmlhttp.responseText;
+        console.log('response',response)
+        if(response == '1'){
+            //loader.hideLoader();
+            window.open(url,'_self') 
+            //window.open(url,'_blank') 
+        }else{
+           text = "Anvio` port error: "+port.toString()
+           document.getElementById('message').innerHTML = 'Failed: '+text
+        }
+       }
+    };
+    xmlhttp.send(JSON.stringify(args));
+
+
+</script>
