@@ -192,7 +192,7 @@ def run(args):
         for logFileName in log_files:
             
             p = os.path.basename(logFileName).split('.')[1]
-            upfileName = os.path.join(args.file_base, p+'.up')
+            upFileName = os.path.join(args.file_base, p+'.up')
             
             #print('tport',p)
             # what if "anvio.0.log" ?
