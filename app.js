@@ -96,9 +96,12 @@ app.post("/wait_on_anvio", async(req,res)=>{
     const isFile = await holdBeforeFileExists(up_file, maxTimeToCheck);
     //console.log('file',isFile,up_file)
     if(isFile){
-        res.send('isFile')  // 
+        console.log('returning isFile true')
+        return res.send('isFile')  // 
+        
     } else {
-        res.send('Failed to start anvio pangenome. Or too long to create an UpFile');
+        console.log('returning false')
+        return res.send('Failed to start anvio pangenome. Or too long to create an UpFile');
     }
 
 });

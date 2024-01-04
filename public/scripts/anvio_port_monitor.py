@@ -73,45 +73,44 @@ time_stamp_max_diff = 50
 #diff_epoch_til_now_limit = 100000
 def kill_proc(pid, note=''):
     if note:
-        logging.info('killproc note: '+note)
+        if args.debug:
+            print('killproc note: '+note)
+        else:
+            logging.info('killproc note: '+note)
     try:
-        logging.info('killing '+pid)
+        if args.debug:
+            print('killing '+pid)
+        else:
+            logging.info('killing '+pid)
         os.system('kill '+str(pid)+' 2>/dev/null')
     except:
-        logging.info('FailERROR - kill '+str(pid))
+        if args.debug:
+            print('FailERROR - kill '+str(pid))
+        else:
+            logging.info('FailERROR - kill '+str(pid))
         
 def delete_file(fname):
     try:
-        logging.info('deleting '+fname)
+        if args.debug:
+            print('deleting '+fname)
+        else:
+            logging.info('deleting '+fname)
         os.remove(fname)
     except:
-        logging.info('FailERROR removing '+fname)
+        if args.debug:
+            print('FailERROR removing '+fname)
+        else:
+            logging.info('FailERROR removing '+fname)
 def delete_file_by_port(p):
     port_log_file = os.path.join(args.file_base,'anvio.'+p+'.log')
     delete_file(port_log_file)
-# def kill_proc_by_port(p):
-#     try:
-#         print('killing',pid)
-#         os.system('kill '+str(pid)+' 2>/dev/null')
-#     except:
-#         print('FailERROR','kill '+str(pid))        
-# def check_date_match(last_line):
-#     re_match = regExp.search(last_line)
-#     if re_match:
-#        # good to tell
-#        return 1
-#     else:
-#        time.sleep(5.5)
-#        return 0
+
        
 def is_file_updated(fn):
     last_forder_update_timestamp = os.stat(fn).st_mtime
-
     last_folder_update_datetime = datetime.datetime.fromtimestamp(last_forder_update_timestamp)
     current_datetime = datetime.datetime.now()
-
     difference = abs(current_datetime - last_folder_update_datetime)
-    
     return difference.total_seconds()
     
 def run(args):
@@ -133,7 +132,8 @@ def run(args):
         log_ports = {}
         log_port_keys = [] 
 
-        
+        if args.debug:
+            print()
         #seconds = time.time()
         
         #print('now',round(seconds, 0))
@@ -182,7 +182,10 @@ def run(args):
                     else:
                         running_ports[port] = [pid]
                 else:
-                    logging.info('Error line has "anvi-display-pan" but zero length: '+line)
+                    if args.debug:
+                        print('Error line has "anvi-display-pan" but zero length: '+line)
+                    else:
+                        logging.info('Error line has "anvi-display-pan" but zero length: '+line)
         running_ports_keys = list(running_ports.keys())
         
         
@@ -209,30 +212,48 @@ def run(args):
                     try:
                         result = subprocess.check_output(['grep', 'http://127.0.0.1:', logFileName])
                         #print('grepcmd',grep_cmd)
-                        logging.info(p+' grep result: '+(result.strip()).decode('utf-8'))
+                        if args.debug:
+                            print(p+' grep result: '+(result.strip()).decode('utf-8'))
+                        else:
+                            logging.info(p+' grep result: '+(result.strip()).decode('utf-8'))
                         fpup = open(os.path.join(args.file_base, p+'.up'), "w")
                         fpup.write(p+'up')
                         fpup.close()
                     except:
-                        logging.info(p+' grep result 0')
+                        if args.debug:
+                            print(p+' grep result 0')
+                        else:
+                            logging.info(p+' grep result 0')
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1
                     else:
-                        logging.info('deleting this log file (no anvio running) '+p)
+                        if args.debug:
+                            print('deleting this log file (no anvio running) '+p)
+                        else:
+                            logging.info('deleting this log file (no anvio running) '+p)
                         delete_file(logFileName)
                         delete_file(upFileName)
                         if p in log_ports:
                             log_ports.pop(p)
                 else:
-                    logging.info('Error -NOT isFile '+logFileName)
+                    if args.debug:
+                        print('Error -NOT isFile '+logFileName)
+                    else:
+                        logging.info('Error -NOT isFile '+logFileName)
                     
                     
         log_ports_keys = list(log_ports.keys())
         log_ports_keys.sort()
         running_ports_keys.sort()
-        logging.info('running_ports: '+str(running_ports_keys))
-        logging.info('log_ports '+str(log_ports_keys))
+        if args.debug:
+            print('running_ports: '+str(running_ports_keys))
+        else:
+            logging.info('running_ports: '+str(running_ports_keys))
+        if args.debug:
+            print('log_ports '+str(log_ports_keys))
+        else:
+            logging.info('log_ports '+str(log_ports_keys))
         open_ports = list(set(port_range) - set(log_ports_keys))
         logging.info(str(len(open_ports))+' Open Ports '+str(open_ports))
         # keep an updated file of open ports for node code
@@ -249,9 +270,15 @@ def run(args):
             pfn = os.path.join(args.file_base, 'anvio.'+p+'.log')
             ufn = os.path.join(args.file_base, p+'.up')
             difference_seconds = is_file_updated(pfn) # difference from current time
-            logging.info(p+' dif '+str(difference_seconds))
+            if args.debug:
+                print(p+' dif '+str(difference_seconds))
+            else:
+                logging.info(p+' dif '+str(difference_seconds))
             if difference_seconds > time_stamp_max_diff:
-                logging.info('Deleting because DIFF between: '+str(time_stamp_max_diff))
+                if args.debug:
+                    print('Deleting because DIFF between: '+str(time_stamp_max_diff))
+                else:
+                    logging.info('Deleting because DIFF between: '+str(time_stamp_max_diff))
                 
                 delete_file(pfn)
                 delete_file(ufn)
@@ -282,7 +309,9 @@ if __name__ == '__main__':
     parser.add_argument("-host", "--host",    
                 required=False,  action="store",   dest = "host", default='localhost',
                 help = '')
-    
+    parser.add_argument("-debug", "--debug",    
+                required=False,  action="store_true",   dest = "debug", default=False,
+                help = '')
     
     args = parser.parse_args() 
     

@@ -13,10 +13,13 @@
     <div id='loading'></div>
 
     <div id='message'>Info</div>
-
 </body>
 </html>
-<script src="/assets/jquery-2.1.1.min.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous">
+</script>
 
 <script>
 
@@ -39,7 +42,7 @@
     args = {}
     args.port = port
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", 'wait_on_anvio', false);
+    xmlhttp.open("POST", 'wait_on_anvio', true);
     xmlhttp.setRequestHeader("Content-type","application/json");
     xmlhttp.onreadystatechange = function() {
     if (xmlhttp.readyState == 4 ) {

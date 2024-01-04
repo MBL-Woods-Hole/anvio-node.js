@@ -1,106 +1,90 @@
-<!DOCTYPE html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <html lang="en">
 <head>
-  <title><%= title %></title>
-  <style>
-   #loader {
-            border: 12px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 12px solid #444444;
-            width: 70px;
-            height: 70px;
-            animation: spin 1s linear infinite;
-        }
- 
-        .center {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin: auto;
-        }
- 
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-	</style>
+<title><%= title %></title>
+<style>
+ .LockOn {
+    display: block;
+    visibility: visible;
+    position: absolute;
+    z-index: 999;
+    top: 0px;
+    left: 0px;
+    width: 105%;
+    height: 105%;
+    background-color:white;
+    vertical-align:bottom;
+    padding-top: 20%; 
+    filter: alpha(opacity=75); 
+    opacity: 0.75; 
+    font-size:large;
+    color:blue;
+    font-style:italic;
+    font-weight:400;
+    background-image: url("/assets/loading3.gif");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+</style>
 </head>
 
 <body>
-  <div id="loader" class="center"></div>
-  <div id='header'>Selected Pangenome: "<%= pg %>"</div>
-  
-    <div id='loading'></div>
-
-    <div id='message'>Loading to port <%= port %><a href='<%= url %>'><%= url %></a></div>
+  <div id="coverScreen"  class="LockOn"></div>
+  <div id='message'>Loading to port <%= port %></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </body>
 </html>
-<script src="/assets/jquery-2.1.1.min.js"></script>
+
 
 
 <script>
+//document.getElementById('mymessage').innerHTML = 'mystart'
 function isInt(value) {
     return !isNaN(value) && 
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
 }
-document.onreadystatechange = function () {
-            if (document.readyState !== "complete") {
-                document.querySelector("body").style.visibility = "hidden";
-                document.querySelector("#loader").style.visibility = "visible";
-            } else {
-                document.querySelector("#loader").style.display = "none";
-                document.querySelector("body").style.visibility = "visible";
-            }
-};
+
+$("#coverScreen").show();
 
 port = '<%= port %>'
 url = '<%= url %>'
 
-//if(port != 0){
 if(!port || port == '0'){
-    // initialize our loader overlay
-    //console.log('onload')
-    //document.getElementById('loading').innerHTML = 'Loading...' +url
-    //loader.initialize();
-    //loader.showLoader();
-    //loader.hideLoader();
     text = "All Anvio` ports are in use. Try again later."
     document.getElementById('message').innerHTML = text
 }else{    
-  if(isInt(port)){
-    args = {}
-    args.port = port
-    //console.log('onload',port)
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("POST", 'wait_on_anvio', false);
-    xmlhttp.setRequestHeader("Content-type","application/json");
-    xmlhttp.onreadystatechange = function() {
-    if (xmlhttp.readyState == 4 ) {
-        var response = xmlhttp.responseText;
-        //console.log('response',response)
-        if(response === 'isFile'){   // integer 1
-            //loader.hideLoader();
-            //window.open(url,'_self') 
-            //window.open(url,'_blank') 
-            document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
-        }else{
-           text = "Anvio` port error: "+port.toString()
-           document.getElementById('message').innerHTML = response+'\nFailed: '+text
-        }
-       }
-    };
-    xmlhttp.send(JSON.stringify(args));
-  }else{
-    //loader.hideLoader();
-    text = "Anvio` port error: "+port.toString()
-    document.getElementById('message').innerHTML = text
-  }
-}
-
-
+    if(isInt(port)){ 
+        args = {}
+        args.port = port
+        console.log('onload',port)
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST", 'wait_on_anvio', true);
+        xmlhttp.setRequestHeader("Content-type","application/json");
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 ) {
+              var response = xmlhttp.responseText;
+              console.log('response',response)
+              //document.getElementById('mymessage').innerHTML = 'resp '+response
+              if(response === 'isFile'){   // integer 1
+                $("#coverScreen").hide();
+                //window.open(url,'_self') 
+                //window.open(url,'_blank') 
+                document.getElementById('message').innerHTML = "Open: <a href='"+url+"' target='_blank'>"+url+"</a>"
+              }else{
+                  text = "Anvio` port error: "+port
+               //document.getElementById('message').innerHTML = response+'\nFailed: '+text
+              }
+            }
+        };
+        xmlhttp.send(JSON.stringify(args));
+    }else{
+        text = "Anvio` port error: "+port
+        document.getElementById('message').innerHTML = text
+    }
+} 
 
 </script>
