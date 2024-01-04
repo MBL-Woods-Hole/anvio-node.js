@@ -205,15 +205,16 @@ def run(args):
                     #grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
                     #result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
                     #result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
+                    #serving on 0.0.0.0:8080 view at http://127.0.0.1:8080
                     try:
-                        result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
+                        result = subprocess.check_output(['grep', 'http://127.0.0.1:', logFileName])
                         #print('grepcmd',grep_cmd)
                         logging.info(p+' grep result: '+(result.strip()).decode('utf-8'))
                         fpup = open(os.path.join(args.file_base, p+'.up'), "w")
                         fpup.write(p+'up')
                         fpup.close()
-                    except subprocess.CalledProcessError as e:
-                        logging.info(p+' grep result')
+                    except:
+                        logging.info(p+' grep result 0')
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1

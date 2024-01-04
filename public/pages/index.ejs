@@ -81,8 +81,9 @@ if(!port || port == '0'){
         //console.log('response',response)
         if(response === 'isFile'){   // integer 1
             //loader.hideLoader();
-            window.open(url,'_self') 
+            //window.open(url,'_self') 
             //window.open(url,'_blank') 
+            document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
         }else{
            text = "Anvio` port error: "+port.toString()
            document.getElementById('message').innerHTML = response+'\nFailed: '+text
