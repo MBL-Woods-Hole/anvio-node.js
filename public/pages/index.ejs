@@ -43,7 +43,7 @@
 
 <script>
 function isInt(value) {
-  return !isNaN(value) && 
+    return !isNaN(value) && 
          parseInt(Number(value)) == value && 
          !isNaN(parseInt(value, 10));
 }
@@ -55,7 +55,7 @@ document.onreadystatechange = function () {
                 document.querySelector("#loader").style.display = "none";
                 document.querySelector("body").style.visibility = "visible";
             }
-        };
+};
 
 port = '<%= port %>'
 url = '<%= url %>'
@@ -92,12 +92,12 @@ if(!port || port == '0'){
     };
     xmlhttp.send(JSON.stringify(args));
   }else{
-    loader.hideLoader();
+    //loader.hideLoader();
     text = "Anvio` port error: "+port.toString()
     document.getElementById('message').innerHTML = text
   }
 }else{
-    loader.hideLoader();
+    //loader.hideLoader();
     text = "All Anvio` ports are in use. Try again later."
     document.getElementById('message').innerHTML = text
 }
