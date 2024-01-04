@@ -60,8 +60,8 @@ document.onreadystatechange = function () {
 port = '<%= port %>'
 url = '<%= url %>'
 
-if(port != 0){
-  
+//if(port != 0){
+if(!port || port == '0'){
     // initialize our loader overlay
     //console.log('onload')
     //document.getElementById('loading').innerHTML = 'Loading...' +url
