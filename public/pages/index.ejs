@@ -14,7 +14,7 @@
     left: 0px;
     width: 105%;
     height: 105%;
-    background-color:white;
+    background-color: rgba( 26, 26, 26, 0.5 );
     vertical-align:bottom;
     padding-top: 20%; 
     filter: alpha(opacity=75); 
@@ -73,7 +73,7 @@ if(!port || port == '0'){
                 $("#coverScreen").hide();
                 //window.open(url,'_self') 
                 //window.open(url,'_blank') 
-                document.getElementById('message').innerHTML = "Open: <a href='"+url+"' target='_blank'>"+url+"</a>"
+                document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
               }else{
                   text = "Anvio` port error: "+port
                //document.getElementById('message').innerHTML = response+'\nFailed: '+text
