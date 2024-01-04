@@ -79,7 +79,7 @@ if(port != 0){
     if (xmlhttp.readyState == 4 ) {
         var response = xmlhttp.responseText;
         //console.log('response',response)
-        if(response == 1){   // integer 1
+        if(response === 'isFile'){   // integer 1
             //loader.hideLoader();
             window.open(url,'_self') 
             //window.open(url,'_blank') 

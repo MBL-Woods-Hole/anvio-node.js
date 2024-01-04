@@ -26,7 +26,7 @@ import re
 from time import sleep
 import configparser as ConfigParser
 #sys.path.append( '/Users/avoorhis/programming/vamps-node.js/public/scripts/maintenance_scripts' )
-
+import logging
 import datetime
 from datetime import timezone, timedelta
 from dateutil import tz
@@ -49,6 +49,9 @@ from contextlib import closing
 CONFIG_ITEMS = {}
 # get the current time in seconds since the epoch
 
+#https://stackoverflow.com/questions/4675728/redirect-stdout-to-a-file-in-python
+#with open('file', 'w') as sys.stdout:
+#    print('test')
 
 def is_port_in_use(port: int) -> bool:
     import socket
@@ -70,19 +73,19 @@ time_stamp_max_diff = 50
 #diff_epoch_til_now_limit = 100000
 def kill_proc(pid, note=''):
     if note:
-        print('killproc note:',note)
+        logging.info('killproc note: '+note)
     try:
-        print('killing',pid)
+        logging.info('killing',pid)
         os.system('kill '+str(pid)+' 2>/dev/null')
     except:
-        print('FailERROR','kill '+str(pid))
+        logging.info('FailERROR - kill '+str(pid))
         
 def delete_file(fname):
     try:
-        print('deleting',fname)
+        logging.info('deleting '+fname)
         os.remove(fname)
     except:
-        print('FailERROR removing',fname)
+        logging.info('FailERROR removing '+fname)
 def delete_file_by_port(p):
     port_log_file = os.path.join(args.file_base,'anvio.'+p+'.log')
     delete_file(port_log_file)
@@ -134,7 +137,7 @@ def run(args):
         #seconds = time.time()
         
         #print('now',round(seconds, 0))
-        print()
+        #logging.info()
         #cmd = 'ps aux|grep "\-P 80"'
         #res = os.system(cmd)
         res1 = subprocess.check_output('ps aux', shell=True)
@@ -179,7 +182,7 @@ def run(args):
                     else:
                         running_ports[port] = [pid]
                 else:
-                    print('Error line has "anvi-display-pan" but zero length',line)
+                    logging.info('Error line has "anvi-display-pan" but zero length: '+line)
         running_ports_keys = list(running_ports.keys())
         
         
@@ -205,32 +208,32 @@ def run(args):
                     try:
                         result = subprocess.check_output(['grep', 'http://127.0.0.1:80', logFileName])
                         #print('grepcmd',grep_cmd)
-                        print(p,'grep result',(result.strip()).decode('utf-8'))
+                        logging.info(p+' grep result: '+(result.strip()).decode('utf-8'))
                         fpup = open(os.path.join(args.file_base, p+'.up'), "w")
                         fpup.write(p+'up')
                         fpup.close()
                     except subprocess.CalledProcessError as e:
-                        print(p,'grep result')
+                        logging.info(p+' grep result')
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1
                     else:
-                        print('deleting this log file (no anvio running)',p)
+                        logging.info('deleting this log file (no anvio running) '+p)
                         delete_file(logFileName)
                         delete_file(upFileName)
                         if p in log_ports:
                             log_ports.pop(p)
                 else:
-                    print('Error -NOT isFile',logFileName)
+                    logging.info('Error -NOT isFile '+logFileName)
                     
                     
         log_ports_keys = list(log_ports.keys())
         log_ports_keys.sort()
         running_ports_keys.sort()
-        print('running_ports',running_ports_keys)
-        print('log_ports',log_ports_keys)
+        logging.info('running_ports: '+str(running_ports_keys))
+        logging.info('log_ports '+str(log_ports_keys))
         open_ports = list(set(port_range) - set(log_ports_keys))
-        print(len(open_ports),'Open Ports',open_ports)
+        logging.info(str(len(open_ports))+' Open Ports '+str(open_ports))
         # keep an updated file of open ports for node code
         fp = open(os.path.join(args.file_base,'open_ports.txt'), "w")
         fp.write(str(open_ports))
@@ -245,9 +248,9 @@ def run(args):
             pfn = os.path.join(args.file_base, 'anvio.'+p+'.log')
             ufn = os.path.join(args.file_base, p+'.up')
             difference_seconds = is_file_updated(pfn) # difference from current time
-            print(p,'dif',difference_seconds)
+            logging.info(p+' dif '+str(difference_seconds))
             if difference_seconds > time_stamp_max_diff:
-                print('Deleting because DIFF between',time_stamp_max_diff)
+                logging.info('Deleting because DIFF between: '+str(time_stamp_max_diff))
                 
                 delete_file(pfn)
                 delete_file(ufn)
@@ -280,7 +283,11 @@ if __name__ == '__main__':
                 help = '')
     
     
-    args = parser.parse_args()    
+    args = parser.parse_args() 
+    
+    logging.basicConfig(level=logging.DEBUG, filename="port_monitor.log", filemode="w",
+                format="%(asctime)-15s %(levelname)-8s %(message)s") 
+                  
     if args.host == 'homd_dev' or args.host == 'homd_prod':
         args.file_base = '/home/ubuntu/anvio/pangenomes/'
     elif args.host == 'localhost':
