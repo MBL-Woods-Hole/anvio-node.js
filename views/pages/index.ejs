@@ -28,13 +28,29 @@
     background-attachment: fixed;
     background-position: center;
 }
+#header{
+   background:lightblue;
+   height:30px;
+   width:100%;
+   font-size:22px;
+   padding:30px 0 30px 0;
+   margin-top:20px;
+   text-align:center;
+}
+#message{
+   font-size:18px;
+   width:100%;
+   padding:20px;
+   margin-top:100px;
+}
 </style>
 </head>
 
 <body>
   <div id="coverScreen"  class="LockOn"></div>
-  <div id='message'>Loading to port <%= port %></div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <div id='header'>HOMD Selected Pangenome: "<%= pg %>"</div>
+  <div id='message'>Loading to port #<%= port %> <a href='<%= url %>'><%= url %></a></div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </body>
 </html>
 
@@ -70,8 +86,9 @@ if(!port || port == '0'){
               console.log('response',response)
               //document.getElementById('mymessage').innerHTML = 'resp '+response
               if(response === 'isFile'){   // integer 1
-                $("#coverScreen").hide();
+                
                 window.open(url,'_self') 
+                $("#coverScreen").hide();
                 //window.open(url,'_blank') 
                 document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
               }else{

@@ -18,9 +18,10 @@ app.use(bodyParser.json());
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 //setting the view engine as EJS. 
-app.set('view engine', 'ejs');
+
 //roots the views directory to public
-app.set('views', 'public/pages');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 //tells express that the public folder is the static folder
 app.use(express.static("public"));
 
@@ -76,7 +77,7 @@ app.get("/", function(req,res){
          anviourl = CFG.URL_BASE+'/'+port +'/'
      }
      console.log('URL',anviourl)
-     res.render('index', {
+     res.render('pages/index', {
         title: 'HOMD :: ANVIO',
         pg: pg,
         port: port,
