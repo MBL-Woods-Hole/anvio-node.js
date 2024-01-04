@@ -75,7 +75,7 @@ def kill_proc(pid, note=''):
     if note:
         logging.info('killproc note: '+note)
     try:
-        logging.info('killing',pid)
+        logging.info('killing '+pid)
         os.system('kill '+str(pid)+' 2>/dev/null')
     except:
         logging.info('FailERROR - kill '+str(pid))
