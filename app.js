@@ -20,7 +20,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 //setting the view engine as EJS. 
 app.set('view engine', 'ejs');
 //roots the views directory to public
-app.set('views', 'public');
+app.set('views', 'public/pages');
 //tells express that the public folder is the static folder
 app.use(express.static("public"));
 
@@ -46,7 +46,7 @@ app.get("/", function(req,res){
     if(!isInt(port)){
       return res.send("Bad port: '"+req.query.port+"'")
     }else if(port == 0){
-       res.render('pages/index', {
+       res.render('index', {
         title: 'HOMD :: ANVIO',
         pg: pg,
         port: 0,
@@ -76,7 +76,7 @@ app.get("/", function(req,res){
          anviourl = CFG.URL_BASE+'/'+port +'/'
      }
      console.log('URL',anviourl)
-     res.render('pages/index', {
+     res.render('index', {
         title: 'HOMD :: ANVIO',
         pg: pg,
         port: port,
@@ -89,19 +89,17 @@ app.get("/", function(req,res){
 });
 
 app.post("/wait_on_anvio", async(req,res)=>{
-    console.log('in wait')
-    console.log('req.body',req.body)
+    console.log('in wait => req.body',req.body)
     up_file = path.join(CFG.PATH_TO_PANGENOMES,req.body.port+'.up')
     // continue to look for file up to 2 min
     const maxTimeToCheck = 60000; //60 second
     const isFile = await holdBeforeFileExists(up_file, maxTimeToCheck);
-    console.log('file',isFile,up_file)
+    //console.log('file',isFile,up_file)
     if(isFile){
-        res.send('1')
+        res.send(1)  // integer 1
     } else {
         res.send('Failed to start anvio pangenome. Or too long to create an UpFile');
     }
-    //res.send('okay')
 
 });
 // app.get('/app', function (req, res) {

@@ -113,7 +113,7 @@ function isInt(value) {
 port = '<%= port %>'
 url = '<%= url %>'
 // http://localhost:8080
-if(port != 0){
+if(port == 0){
    console.log('NOPORT',port)
 }else{
   console.log(' GoodPORT',port)

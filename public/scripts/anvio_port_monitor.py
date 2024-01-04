@@ -59,14 +59,15 @@ def is_port_in_use(port: int) -> bool:
 # same as range in 
 port_range = ['8080','8081','8082','8083','8084']#,'8086','8087','8088','8089']
 #port_range = ['8080','8081','8082','8083']
-sleep_time = 10
+#sleep_time = 10
+sleep_time = 3
 time_stamp_max_diff = 50
 # 69434 roughly diff between now and epoch
 # this diff presents before log file is establised
 # used to prevent premature deletion
 # nothing above this number will get deleted
 #diff_epoch_til_now_limit = 10000
-diff_epoch_til_now_limit = 100000
+#diff_epoch_til_now_limit = 100000
 def kill_proc(pid, note=''):
     if note:
         print('killproc note:',note)
