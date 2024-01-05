@@ -1,0 +1,18 @@
+[Unit]
+Description=hello_env.js - making your environment variables rad
+Documentation=https://example.com
+After=network.target
+
+[Service]
+Environment=NODE_PORT=3010
+StandardOutput=file:/home/ubuntu/log1.log
+StandardError=file:/home/ubuntu/log2.log
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/anvio-node.js/
+ExecStart=/usr//bin/node app.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
