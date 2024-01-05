@@ -17,15 +17,12 @@ import os
 from stat import * # ST_SIZE etc
 import sys
 import shutil
-import types
-import time
-import random
+
 import glob
-import csv
+
 import re
 from time import sleep
 import configparser as ConfigParser
-#sys.path.append( '/Users/avoorhis/programming/vamps-node.js/public/scripts/maintenance_scripts' )
 import logging
 import datetime
 from datetime import timezone, timedelta
@@ -40,6 +37,10 @@ import subprocess
 import socket
 from contextlib import closing
 
+locahost_path_to_pangenomes = '/Users/avoorhis/programming/github/pangenomes/'
+server_path_to_pangenomes = '/home/ubuntu/anvio/pangenomes/'
+port_monitor_log = 'port_monitor.log'
+open_ports_txt = 'open_ports.txt'
 """
 
 """
@@ -76,42 +77,56 @@ def kill_proc(pid, note=''):
         if args.debug:
             print('killproc note: '+note)
         else:
-            logging.info('killproc note: '+note)
+            args.logfilep.write('killproc note: '+note+'\n')
     try:
         if args.debug:
             print('killing '+pid)
         else:
-            logging.info('killing '+pid)
+            args.logfilep.write('killing '+pid+'\n')
         os.system('kill '+str(pid)+' 2>/dev/null')
     except:
         if args.debug:
             print('FailERROR - kill '+str(pid))
         else:
-            logging.info('FailERROR - kill '+str(pid))
+            args.logfilep.write('FailERROR - kill '+str(pid)+'\n')
         
 def delete_file(fname):
     try:
         if args.debug:
             print('deleting '+fname)
         else:
-            logging.info('deleting '+fname)
+            args.logfilep.write('deleting '+fname+'\n')
         os.remove(fname)
     except:
         if args.debug:
             print('FailERROR removing '+fname)
         else:
-            logging.info('FailERROR removing '+fname)
+            args.logfilep.write('FailERROR removing '+fname+'\n')
 def delete_file_by_port(p):
     port_log_file = os.path.join(args.file_base,'anvio.'+p+'.log')
     delete_file(port_log_file)
 
        
 def is_file_updated(fn):
-    last_forder_update_timestamp = os.stat(fn).st_mtime
+    st = os.stat(fn)
+    last_forder_update_timestamp = st.st_mtime
     last_folder_update_datetime = datetime.datetime.fromtimestamp(last_forder_update_timestamp)
     current_datetime = datetime.datetime.now()
     difference = abs(current_datetime - last_folder_update_datetime)
     return difference.total_seconds()
+    
+def check_port_monitor():
+    #st = os.stat(port_monitor_log)
+    #print(port_monitor_log,'st',st)
+    #filesize = st.st_size  # in bytes
+    # overnight size on server: 5,194,520
+    #print(port_monitor_log,'filesize',filesize)
+    current_size = args.logfilep.tell()
+    print(port_monitor_log,'f.tellcurrent_size',current_size)
+    if current_size > 500000:  # 6,000,000
+        #args.logfilep.close()
+        #args.logfilep = open(port_monitor_log, 'a')
+        args.logfilep.truncate(0)
     
 def run(args):
     
@@ -125,6 +140,8 @@ def run(args):
     # 172.16.0.3 - - [25/Sep/2002:14:04:19 +0200]
     while 1:
         sleep(sleep_time)
+        #if !args.debug:
+        check_port_monitor()
         #dt = datetime.datetime.now()
         #currentdt = dt.replace(tzinfo=timezone.utc)
         running_ports = {}
@@ -137,7 +154,7 @@ def run(args):
         #seconds = time.time()
         
         #print('now',round(seconds, 0))
-        #logging.info()
+        #args.logfilep.write()
         #cmd = 'ps aux|grep "\-P 80"'
         #res = os.system(cmd)
         res1 = subprocess.check_output('ps aux', shell=True)
@@ -185,7 +202,7 @@ def run(args):
                     if args.debug:
                         print('Error line has "anvi-display-pan" but zero length: '+line)
                     else:
-                        logging.info('Error line has "anvi-display-pan" but zero length: '+line)
+                        args.logfilep.write('Error line has "anvi-display-pan" but zero length: '+line+'\n')
         running_ports_keys = list(running_ports.keys())
         
         
@@ -215,7 +232,7 @@ def run(args):
                         if args.debug:
                             print(p+' grep result: '+(result.strip()).decode('utf-8'))
                         else:
-                            logging.info(p+' grep result: '+(result.strip()).decode('utf-8'))
+                            args.logfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
                         fpup = open(os.path.join(args.file_base, p+'.up'), "w")
                         fpup.write(p+'up')
                         fpup.close()
@@ -223,7 +240,7 @@ def run(args):
                         if args.debug:
                             print(p+' grep result 0')
                         else:
-                            logging.info(p+' grep result 0')
+                            args.logfilep.write(p+' grep result 0'+'\n')
                     
                     if p in running_ports_keys:
                         log_ports[p] = 1
@@ -231,7 +248,7 @@ def run(args):
                         if args.debug:
                             print('deleting this log file (no anvio running) '+p)
                         else:
-                            logging.info('deleting this log file (no anvio running) '+p)
+                            args.logfilep.write('deleting this log file (no anvio running) '+p+'\n')
                         delete_file(logFileName)
                         delete_file(upFileName)
                         if p in log_ports:
@@ -240,7 +257,7 @@ def run(args):
                     if args.debug:
                         print('Error -NOT isFile '+logFileName)
                     else:
-                        logging.info('Error -NOT isFile '+logFileName)
+                        args.logfilep.write('Error -NOT isFile '+logFileName+'\n')
                     
                     
         log_ports_keys = list(log_ports.keys())
@@ -249,15 +266,16 @@ def run(args):
         if args.debug:
             print('running_ports: '+str(running_ports_keys))
         else:
-            logging.info('running_ports: '+str(running_ports_keys))
+            args.logfilep.write('running_ports: '+str(running_ports_keys)+'\n')
         if args.debug:
             print('log_ports '+str(log_ports_keys))
         else:
-            logging.info('log_ports '+str(log_ports_keys))
+            args.logfilep.write('log_ports '+str(log_ports_keys)+'\n')
+            
         open_ports = list(set(port_range) - set(log_ports_keys))
-        logging.info(str(len(open_ports))+' Open Ports '+str(open_ports))
+        args.logfilep.write(str(len(open_ports))+' Open Ports '+str(open_ports)+'\n')
         # keep an updated file of open ports for node code
-        fp = open(os.path.join(args.file_base,'open_ports.txt'), "w")
+        fp = open(os.path.join(args.file_base, open_ports_txt), "w")
         fp.write(str(open_ports))
         fp.close()
         #time.sleep(5.5)
@@ -273,12 +291,12 @@ def run(args):
             if args.debug:
                 print(p+' dif '+str(difference_seconds))
             else:
-                logging.info(p+' dif '+str(difference_seconds))
+                args.logfilep.write(p+' dif '+str(difference_seconds)+'\n')
             if difference_seconds > time_stamp_max_diff:
                 if args.debug:
                     print('Deleting because DIFF between: '+str(time_stamp_max_diff))
                 else:
-                    logging.info('Deleting because DIFF between: '+str(time_stamp_max_diff))
+                    args.logfilep.write('Deleting because DIFF between: '+str(time_stamp_max_diff)+'\n')
                 
                 delete_file(pfn)
                 delete_file(ufn)
@@ -294,38 +312,43 @@ if __name__ == '__main__':
     
     myusage = """usage: anvio_port_monitor.py  [options]
          
-         must be run in the anvio docker container
+         Must be run inside the anvio` docker container in the /pangenomes directory
          
-         will monitor anvio ports in the 8080-8089 range
-         and close down any unused ports by finding the orphan anvio process
-         and killing it
+         Will monitor anvio ports in the %s port range
+         and close down any unused ports by finding the orphan anvio processes
+         and killing it/them. Also removes the port specific orphaned log files.
          
-         -host anvio-homd  DEFAULT localhost
+         Will record open ports to "%s" which is then read by anvio-homd.js to assign ports
+           to the running anvio` pangenomes.
          
-    """
+         Options:
+         -host/--host  [DEFAULT: localhost]
+         -debug/--debug Will print log notes to stdout
+                       otherwise will print to "%s"
+         -h/--help Display this message
+         
+    """ % (port_range,open_ports_txt,port_monitor_log)
+    
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
-       
     parser.add_argument("-host", "--host",    
                 required=False,  action="store",   dest = "host", default='localhost',
-                help = '')
+                help = 'DEFAULT is localhost')
     parser.add_argument("-debug", "--debug",    
                 required=False,  action="store_true",   dest = "debug", default=False,
-                help = '')
+                help = '-debug will print to STDOUT. Default: log to file')
     
     args = parser.parse_args() 
     
-    logging.basicConfig(level=logging.DEBUG, filename="port_monitor.log", filemode="w",
-                format="%(asctime)-15s %(levelname)-8s %(message)s") 
+    # logging.basicConfig(level=logging.DEBUG, filename=port_monitor_log, filemode="w",
+#                 format="%(asctime)-15s %(levelname)-8s %(message)s") 
                   
-    if args.host == 'homd_dev' or args.host == 'homd_prod':
-        args.file_base = '/home/ubuntu/anvio/pangenomes/'
-    elif args.host == 'localhost':
-        args.file_base = '/Users/avoorhis/programming/github/pangenomes/'
+    if args.host == 'localhost':
+        args.file_base = locahost_path_to_pangenomes
     else:
-        print(myusage)
-        sys.exit()
-        
+        args.file_base = server_path_to_pangenomes
+    
+    args.logfilep = open(port_monitor_log, 'a')
         
     args.datetime     = str(datetime.date.today())    
     
