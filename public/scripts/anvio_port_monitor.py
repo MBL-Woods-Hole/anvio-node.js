@@ -122,7 +122,7 @@ def check_port_monitor():
     # overnight size on server: 5,194,520
     #print(port_monitor_log,'filesize',filesize)
     current_size = args.logfilep.tell()
-    print(port_monitor_log,'f.tellcurrent_size',current_size)
+    #print(port_monitor_log,'f.tellcurrent_size',current_size)
     if current_size > 500000:  # 6,000,000
         #args.logfilep.close()
         #args.logfilep = open(port_monitor_log, 'a')
