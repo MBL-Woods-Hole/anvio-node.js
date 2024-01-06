@@ -166,43 +166,31 @@ def run(args):
                 line_parts = line.split()
                 print('resLP',line_parts)
                 # grab and kill unusual ports
+                port_index = line_parts.index('-P') + 1
                 # parse port and pid
-                if len(line_parts) > 0:
+                if len(line_parts) > port_index:
                     pid = line_parts[1]
-                    if line_parts[14] == '-P':
-                        
-                        port = line_parts[15]
-                        print('GRABBING port from ps aux',port)
-                    else:
+                    port = line_parts[port_index]
+                    
+                else:
                         # no descernable port
-                        for p in port_range:
-                            if p in line:
-                               #print('lp',line_parts)
-                               port = p
-                               break
-                            else:
-                                pass
-                                #port = ''
-                                #kill_proc(pid,'port not in ps-aux line')
+                    port = 0
                     #print('Found port',port)
                     # potential log_file
-                    port_log_file = os.path.join(args.file_base,'anvio.'+port+'.log')
-                    if port not in port_range:
-                        kill_proc(pid,'port ('+str(port)+') not in port range')
-                        delete_file_by_port(port)
-                    elif not os.path.isfile(port_log_file):
-                        # kill if no corresponding log file
-                        # kill_proc(pid,'No corresponding log file for '+str(port))
-                        pass
-                    elif port in running_ports:
-                        running_ports[port].append(pid)
-                    else:
-                        running_ports[port] = [pid]
+                port_log_file = os.path.join(args.file_base,'anvio.'+port+'.log')
+                if port not in port_range:
+                    kill_proc(pid,'port ('+str(port)+') not in port range')
+                    delete_file_by_port(port)
+                elif not os.path.isfile(port_log_file):
+                    # kill if no corresponding log file
+                    # kill_proc(pid,'No corresponding log file for '+str(port))
+                    pass
+                    
+                if port in running_ports:
+                    running_ports[port].append(pid)
                 else:
-                    if args.debug:
-                        print('Error line has "anvi-display-pan" but zero length: '+line)
-                    else:
-                        args.logfilep.write('Error line has "anvi-display-pan" but zero length: '+line+'\n')
+                    running_ports[port] = [pid]
+                
         running_ports_keys = list(running_ports.keys())
         
         
