@@ -138,7 +138,9 @@ def run(args):
     # [05/Dec/2023:22:18:04 +0000]
     #re_pattern = '([\d\.?]+) - - \[(.*?)\] "(.*?)" (.*?) (.*?) "(.*?)" "(.*?)"'
     # 172.16.0.3 - - [25/Sep/2002:14:04:19 +0200]
+    count = 0
     while 1:
+        count += 1 
         sleep(sleep_time)
         #if !args.debug:
         check_port_monitor_log_size()
@@ -159,12 +161,12 @@ def run(args):
         #res = os.system(cmd)
         res1 = subprocess.check_output('ps aux', shell=True)
         res = str(res1.decode('utf-8')).split('\n')
-        print('res',res)
+        #print('res',res)
         #sys.exit()
         for line in res:
             if 'anvi-display-pan' in line:
                 line_parts = line.split()
-                print('resLP',line_parts)
+                #print('resLP',line_parts)
                 # grab and kill unusual ports
                 port_index = line_parts.index('-P') + 1
                 # parse port and pid
@@ -174,6 +176,7 @@ def run(args):
                     
                 else:
                         # no descernable port
+                    pid = 0
                     port = 0
                     #print('Found port',port)
                     # potential log_file
@@ -182,8 +185,9 @@ def run(args):
                     kill_proc(pid,'port ('+str(port)+') not in port range')
                     delete_file_by_port(port)
                 elif not os.path.isfile(port_log_file):
-                    # kill if no corresponding log file
-                    # kill_proc(pid,'No corresponding log file for '+str(port))
+                    if count == 1:
+                        # kill if no corresponding log file
+                        kill_proc(pid,'No corresponding log file for '+str(port))
                     pass
                     
                 if port in running_ports:
