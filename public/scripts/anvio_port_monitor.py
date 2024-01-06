@@ -141,6 +141,8 @@ def run(args):
     count = 0
     while 1:
         count += 1 
+        if count > 100000:
+            count = 0
         sleep(sleep_time)
         #if !args.debug:
         check_port_monitor_log_size()
@@ -188,8 +190,6 @@ def run(args):
                     if count == 1:
                         # kill if no corresponding log file
                         kill_proc(pid,'No corresponding log file for '+str(port))
-                    pass
-                    
                 if port in running_ports:
                     running_ports[port].append(pid)
                 else:
