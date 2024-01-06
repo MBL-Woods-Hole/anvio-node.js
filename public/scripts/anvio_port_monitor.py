@@ -159,7 +159,7 @@ def run(args):
         #res = os.system(cmd)
         res1 = subprocess.check_output('ps aux', shell=True)
         res = str(res1.decode('utf-8')).split('\n')
-        #print(res.decode('utf-8'))
+        print('res',res.decode('utf-8'))
         #sys.exit()
         for line in res:
             if 'anvi-display-pan' in line:
