@@ -159,12 +159,12 @@ def run(args):
         #res = os.system(cmd)
         res1 = subprocess.check_output('ps aux', shell=True)
         res = str(res1.decode('utf-8')).split('\n')
-        print('res',res1.decode('utf-8'))
+        print('res',res)
         #sys.exit()
         for line in res:
             if 'anvi-display-pan' in line:
                 line_parts = line.split()
-                #print('res',line_parts)
+                print('resLP',line_parts)
                 # grab and kill unusual ports
                 # parse port and pid
                 if len(line_parts) > 0:
