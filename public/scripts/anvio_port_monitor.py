@@ -115,7 +115,7 @@ def is_file_updated(fn):
     difference = abs(current_datetime - last_folder_update_datetime)
     return difference.total_seconds()
     
-def check_port_monitor():
+def check_port_monitor_log_size():
     #st = os.stat(port_monitor_log)
     #print(port_monitor_log,'st',st)
     #filesize = st.st_size  # in bytes
@@ -141,7 +141,7 @@ def run(args):
     while 1:
         sleep(sleep_time)
         #if !args.debug:
-        check_port_monitor()
+        check_port_monitor_log_size()
         #dt = datetime.datetime.now()
         #currentdt = dt.replace(tzinfo=timezone.utc)
         running_ports = {}
@@ -172,7 +172,7 @@ def run(args):
                     if line_parts[14] == '-P':
                         
                         port = line_parts[15]
-                        #print('GRABBING port from ps aux',port)
+                        print('GRABBING port from ps aux',port)
                     else:
                         # no descernable port
                         for p in port_range:
