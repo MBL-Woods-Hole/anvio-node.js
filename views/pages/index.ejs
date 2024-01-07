@@ -32,16 +32,16 @@
    background:lightblue;
    height:30px;
    width:100%;
-   font-size:22px;
+   font-size:25px;
    padding:30px 0 30px 0;
    margin-top:20px;
    text-align:center;
 }
 #message{
-   font-size:18px;
+   font-size:25px;
    width:100%;
    padding:20px;
-   margin-top:100px;
+   margin-top:50px;
 }
 </style>
 </head>
@@ -49,7 +49,9 @@
 <body>
   <div id="coverScreen"  class="LockOn"></div>
   <div id='header'>HOMD Selected Pangenome: "<%= pg %>"</div>
-  <div id='message'>Loading to port #<%= port %> <a href='<%= url %>'><%= url %></a></div>
+  <center>
+     <div id='message'>Loading Anvio` Pangenome to port #<%= port %><br><a href='<%= url %>'><%= url %></a></div>
+  </center>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </body>
 </html>
@@ -92,8 +94,9 @@ if(!port || port == '0'){
                 //window.open(url,'_blank') 
                 document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
               }else{
+                  $("#coverScreen").hide();
                   text = "Anvio` port error: "+port
-                  document.getElementById('message').innerHTML = response+'\nFailed: '+text
+                  document.getElementById('message').innerHTML = response+'<br>Failed: '+text
               }
             }
         };

@@ -64,8 +64,8 @@ def is_port_in_use(port: int) -> bool:
 port_range = ['8080','8081','8082','8083','8084']#,'8086','8087','8088','8089']
 #port_range = ['8080','8081','8082','8083']
 #sleep_time = 10
-sleep_time = 3
-time_stamp_max_diff = 50
+sleep_time = 3   # seconds
+time_stamp_max_diff = 50   # seconds
 # 69434 roughly diff between now and epoch
 # this diff presents before log file is establised
 # used to prevent premature deletion
@@ -281,9 +281,9 @@ def run(args):
             ufn = os.path.join(args.file_base, p+'.up')
             difference_seconds = is_file_updated(pfn) # difference from current time
             if args.debug:
-                print(p+' dif '+str(difference_seconds))
+                print(p+' diff: '+str(difference_seconds))
             else:
-                args.logfilep.write(p+' dif '+str(difference_seconds)+'\n')
+                args.logfilep.write(p+' diff: '+str(difference_seconds)+'\n')
             if difference_seconds > time_stamp_max_diff:
                 if args.debug:
                     print('Deleting because DIFF between: '+str(time_stamp_max_diff))

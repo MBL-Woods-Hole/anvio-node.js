@@ -93,8 +93,7 @@ app.post("/wait_on_anvio", async(req,res)=>{
     console.log('in wait => req.body',req.body)
     up_file = path.join(CFG.PATH_TO_PANGENOMES,req.body.port+'.up')
     // continue to look for file up to 2 min
-    const maxTimeToCheck = 60000; //60 second
-    const isFile = await holdBeforeFileExists(up_file, maxTimeToCheck);
+    const isFile = await holdBeforeFileExists(up_file, CFG.WAIT_TIME);
     //console.log('file',isFile,up_file)
     if(isFile){
         console.log('returning isFile true')
