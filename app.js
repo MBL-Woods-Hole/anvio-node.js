@@ -101,7 +101,7 @@ app.post("/wait_on_anvio", async(req,res)=>{
         
     } else {
         console.log('returning false')
-        return res.send('Failed to start anvio pangenome. Or too long to create an UpFile');
+        return res.send('Failed to start anvio pangenome. <small>(Or too long to create an UpFile)</small>');
     }
 
 });
