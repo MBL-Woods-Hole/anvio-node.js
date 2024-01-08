@@ -64,8 +64,10 @@ def is_port_in_use(port: int) -> bool:
 port_range = ['8080','8081','8082','8083','8084']#,'8086','8087','8088','8089']
 #port_range = ['8080','8081','8082','8083']
 #sleep_time = 10
-sleep_time = 3   # seconds
-time_stamp_max_diff = 50   # seconds
+sleep_time = 3   # seconds => time of while loop
+time_stamp_max_diff = 50   # seconds => max time between NOW and last logfile update using mtime
+log_file_template = '%s.pg.log'
+up_file_template  = '%s.up'
 # 69434 roughly diff between now and epoch
 # this diff presents before log file is establised
 # used to prevent premature deletion
@@ -73,37 +75,41 @@ time_stamp_max_diff = 50   # seconds
 #diff_epoch_til_now_limit = 10000
 #diff_epoch_til_now_limit = 100000
 def kill_proc(pid, note=''):
+    if args.nodel:
+        print('**nodel set**')
+        print('Not deleting PID:',pid)
+        return
     if note:
         if args.debug:
             print('killproc note: '+note)
-        else:
-            args.logfilep.write('killproc note: '+note+'\n')
+        args.logfilep.write('killproc note: '+note+'\n')
     try:
         if args.debug:
             print('killing '+pid)
-        else:
-            args.logfilep.write('killing '+pid+'\n')
+        args.logfilep.write('killing '+pid+'\n')
         os.system('kill '+str(pid)+' 2>/dev/null')
     except:
         if args.debug:
             print('FailERROR - kill '+str(pid))
-        else:
-            args.logfilep.write('FailERROR - kill '+str(pid)+'\n')
+        args.logfilep.write('FailERROR - kill '+str(pid)+'\n')
         
 def delete_file(fname):
+    if args.nodel:
+        print('**nodel set**')
+        print('Not deleting',fname)
+        return
     try:
         if args.debug:
             print('deleting '+fname)
-        else:
-            args.logfilep.write('deleting '+fname+'\n')
+        args.logfilep.write('deleting '+fname+'\n')
         os.remove(fname)
     except:
         if args.debug:
             print('FailERROR removing '+fname)
-        else:
-            args.logfilep.write('FailERROR removing '+fname+'\n')
+        args.logfilep.write('FailERROR removing '+fname+'\n')
+        
 def delete_file_by_port(p):
-    port_log_file = os.path.join(args.file_base,'anvio.'+p+'.log')
+    port_log_file = os.path.join(args.file_base, log_file_template % p)
     delete_file(port_log_file)
 
        
@@ -182,13 +188,13 @@ def run(args):
                     port = 0
                     #print('Found port',port)
                     # potential log_file
-                port_log_file = os.path.join(args.file_base,'anvio.'+port+'.log')
+                port_log_file = os.path.join(args.file_base, log_file_template % port)
                 if port not in port_range:
                     kill_proc(pid,'port ('+str(port)+') not in port range')
                     delete_file_by_port(port)
                 elif not os.path.isfile(port_log_file):
                     if count == 1:
-                        # kill if no corresponding log file
+                        # kill if no corresponding log file only on startup
                         kill_proc(pid,'No corresponding log file for '+str(port))
                 if port in running_ports:
                     running_ports[port].append(pid)
@@ -199,12 +205,12 @@ def run(args):
         
         
         # now look for and parse log files
-        log_files = glob.glob(os.path.join(args.file_base, 'anvio.*.log'))
+        log_files = glob.glob(os.path.join(args.file_base, '*.pg.log'))
         #print('og_files',log_files)
         for logFileName in log_files:
             
-            p = os.path.basename(logFileName).split('.')[1]
-            upFileName = os.path.join(args.file_base, p+'.up')
+            p = os.path.basename(logFileName).split('.')[0]
+            upFileName = os.path.join(args.file_base, up_file_template % p)
             
             #print('tport',p)
             # what if "anvio.0.log" ?
@@ -225,7 +231,7 @@ def run(args):
                             print(p+' grep result: '+(result.strip()).decode('utf-8'))
                         else:
                             args.logfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
-                        fpup = open(os.path.join(args.file_base, p+'.up'), "w")
+                        fpup = open(os.path.join(args.file_base, up_file_template % p), "w")
                         fpup.write(p+'up')
                         fpup.close()
                     except:
@@ -277,8 +283,8 @@ def run(args):
             # or there is no time stamp
             # kill the process and delete the log file
             
-            pfn = os.path.join(args.file_base, 'anvio.'+p+'.log')
-            ufn = os.path.join(args.file_base, p+'.up')
+            pfn = os.path.join(args.file_base, log_file_template % p)
+            ufn = os.path.join(args.file_base,  up_file_template % p)
             difference_seconds = is_file_updated(pfn) # difference from current time
             if args.debug:
                 print(p+' diff: '+str(difference_seconds))
@@ -315,8 +321,9 @@ if __name__ == '__main__':
          
          Options:
          -host/--host  [DEFAULT: localhost]
-         -debug/--debug Will print log notes to stdout
-                       otherwise will print to "%s"
+         -debug/--debug Will print log notes to stdout also
+                            will always print to "%s"
+         -nodel/--nodel   No delete of files
          -h/--help Display this message
          
     """ % (port_range,open_ports_txt,port_monitor_log)
@@ -329,7 +336,10 @@ if __name__ == '__main__':
     parser.add_argument("-debug", "--debug",    
                 required=False,  action="store_true",   dest = "debug", default=False,
                 help = '-debug will print to STDOUT. Default: log to file')
-    
+    parser.add_argument("-nodel", "--nodel",    
+                required=False,  action="store_true",   dest = "nodel", default=False,
+                help = '-nodel No deletion of logfiles -for debugging')
+                
     args = parser.parse_args() 
     
     # logging.basicConfig(level=logging.DEBUG, filename=port_monitor_log, filemode="w",
@@ -346,4 +356,3 @@ if __name__ == '__main__':
     
     run(args)
     #sys.exit('END: vamps_script_upload_metadata.py')
-    
