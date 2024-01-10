@@ -21,7 +21,7 @@ How to start docker anvio
  
      `docker ps -a`
  - kill a container:
- 
+     `docker system prune`
      `docker kill 06a1c7bc96ab <container_id>`
  - stop docker:
  
@@ -36,19 +36,23 @@ Start docker daemon on ubuntu: https://docs.docker.com/config/daemon/start/
    `sudo systemctl start docker`
     or manually: `sudo dockerd`
 
-For 5 ports:
+For 5 ports run this command in the pangenomes directory:
 
  ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080-8084:8080-8084 meren/anvio:8``
  
-For 10 ports:
+For 10 ports: Change `8080-8084:8080-8084` to `8080-8089:8080-8089`
 
- ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080-8089:8080-8089 meren/anvio:8``
+Testing: Run anvi-diplay-pan from inside Docker:
 
  ``anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --server-only --debug``
- 
+
+Or outside Docker:
+
+ ``docker exec anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --server-only --debug``
+
 Enter a running container:
-`docker exec -it <container_name> bash`
-`docker exec -it anvio bash`
+ >docker exec -it <container_name> bash>
+ >docker exec -it anvio bash
 
 
 ---

@@ -25,7 +25,8 @@ app.set('view engine', 'ejs');
 //tells express that the public folder is the static folder
 app.use(express.static("public"));
 
-const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086,8087,8088,8089]
+//const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086,8087,8088,8089]
+const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086]
 //home route
 
 // app.get("/", function(req,res){
@@ -101,7 +102,7 @@ app.post("/wait_on_anvio", async(req,res)=>{
         return res.send('isFile')  // 
         
     } else {
-        console.log('returning false')
+        console.log('returning false ',req.body.port)
         return res.send('Failed to start anvio pangenome. <small>(Or too long to create an UpFile)</small>');
     }
 
@@ -122,15 +123,11 @@ function anvio_ports(){
     console.log('op file path',open_ports_file)
     try{
       op = fs.readFileSync(open_ports_file, 'utf8').toString()
-      console.log('err1',op)
-      //console.log('err1a',op.replaceAll('\'', '"'))
-      //console.log('err1b',JSON.parse(op),typeof JSON.parse(op))
-      //open_ports = JSON.parse(op.replaceAll('\'', '"'))
       open_ports = JSON.parse(op.replace(/\'/g, '"'));
       if(! open_ports || open_ports.length === 0){
          return 0
       }
-      console.log('err2',open_ports)
+      console.log('open_ports',open_ports)
       
     } catch (err) {
       console.log('Err: Using default open ports from config.js',err)

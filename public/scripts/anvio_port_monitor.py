@@ -61,8 +61,9 @@ def is_port_in_use(port: int) -> bool:
 
 
 # same as range in 
-#port_range = ['8080','8081','8082','8083','8084']#,'8086','8087','8088','8089']
-port_range = ['8080','8081','8082','8083','8084','8085','8086','8087','8088','8089']
+#port_range = ['8080','8081','8082','8083','8084']
+#port_range = ['8080','8081','8082','8083','8084','8085','8086','8087','8088','8089']
+port_range = ['8080','8081','8082','8083','8084','8085','8086']
 #sleep_time = 10
 sleep_time = 3   # seconds => time of while loop
 time_stamp_max_diff = 50   # seconds => max time between NOW and last logfile update using mtime
@@ -272,7 +273,7 @@ def run(args):
             args.logfilep.write('log_ports '+str(log_ports_keys)+'\n')
             
         open_ports = list(set(port_range) - set(log_ports_keys))
-        args.logfilep.write(str(len(open_ports))+' Open Ports '+str(open_ports)+'\n')
+        args.logfilep.write(str(len(open_ports))+' Open Ports: '+str(open_ports)+'\n')
         # keep an updated file of open ports for node code
         fp = open(os.path.join(args.file_base, open_ports_txt), "w")
         fp.write(str(open_ports))

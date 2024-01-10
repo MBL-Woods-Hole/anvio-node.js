@@ -34,15 +34,15 @@ upstream pg8085 {
 upstream pg8086 {
     server localhost:8086;
 }
-upstream pg8087 {
-    server localhost:8087;
-}
-upstream pg8088 {
-    server localhost:8088;
-}
-upstream pg8089 {
-    server localhost:8089;
-}
+# upstream pg8087 {
+#     server localhost:8087;
+# }
+# upstream pg8088 {
+#     server localhost:8088;
+# }
+# upstream pg8089 {
+#     server localhost:8089;
+# }
 server{
    listen 80;
    location = /anvio {
@@ -70,15 +70,15 @@ server{
    location /8086/ {
         proxy_pass http://pg8086/;
    }
-   location /8087/ {
-        proxy_pass http://pg8087/;
-   }   
-   location /8088/ {
-        proxy_pass http://pg8088/;
-   }   
-   location /8089/ {
-        proxy_pass http://pg8089/;
-   }
+#    location /8087/ {
+#         proxy_pass http://pg8087/;
+#    }   
+#    location /8088/ {
+#         proxy_pass http://pg8088/;
+#    }   
+#    location /8089/ {
+#         proxy_pass http://pg8089/;
+#    }
    # have to redirect on a any location request, and if the referrer is /8080 do localhost:8080
    location / {
     if ($http_referer ~* (/anvio) ) {
@@ -106,15 +106,15 @@ server{
     if ($http_referer ~* (/8086) ) {
         proxy_pass http://localhost:8086;
     }
-    if ($http_referer ~* (/8087) ) {
-        proxy_pass http://localhost:8087;
-    }
-    if ($http_referer ~* (/8088) ) {
-        proxy_pass http://localhost:8088;
-    }
-    if ($http_referer ~* (/8089) ) {
-        proxy_pass http://localhost:8089;
-    }
+#     if ($http_referer ~* (/8087) ) {
+#         proxy_pass http://localhost:8087;
+#     }
+#     if ($http_referer ~* (/8088) ) {
+#         proxy_pass http://localhost:8088;
+#     }
+#     if ($http_referer ~* (/8089) ) {
+#         proxy_pass http://localhost:8089;
+#     }
   }
 }
 
