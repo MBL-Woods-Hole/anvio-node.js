@@ -53,6 +53,7 @@ server{
     if ($http_referer ~* (/anvio) ) {
         proxy_pass http://localhost:3010;
     }
+    ###
     if ($http_referer ~* (/8080) ) {
         proxy_pass http://localhost:8080;
     }

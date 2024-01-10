@@ -1,0 +1,120 @@
+# Edit this file to include the ports you need.
+# Then copy it to the nginx conf directory as "nginx.conf"
+# test the conf file: "sudo nginx -t"
+# On ubuntu the directory is here: /etc/nginx/conf.d/
+
+#  https://serverfault.com/questions/1093800/hosting-2-apps-on-different-ports-using-nginx-proxy-pass
+
+upstream anvio {
+    server localhost:3010; # change to the port the node.js webapp is listening on.
+}
+
+# This example allows 10 ports to show anvio instances:
+# 8080, 8081, 8082, 8083 and 8084
+# 8085, 8086, 8087, 8088, and 8089
+
+upstream pg8080 {
+    server localhost:8080;
+}
+upstream pg8081 {
+    server localhost:8081;
+}
+upstream pg8082 {
+    server localhost:8082;
+}
+upstream pg8083 {
+    server localhost:8083;
+}
+upstream pg8084 {
+    server localhost:8084;
+}
+upstream pg8085 {
+    server localhost:8085;
+}
+upstream pg8086 {
+    server localhost:8086;
+}
+upstream pg8087 {
+    server localhost:8087;
+}
+upstream pg8088 {
+    server localhost:8088;
+}
+upstream pg8089 {
+    server localhost:8089;
+}
+server{
+   listen 80;
+   location = /anvio {
+        proxy_pass http://anvio/;
+
+   }
+   location /8080/ {
+        proxy_pass http://pg8080/; # This seems to work because of the trailing slash. 
+   }
+   location /8081/ {
+        proxy_pass http://pg8081/;
+   }
+   location /8082/ {
+        proxy_pass http://pg8082/;
+   }   
+   location /8083/ {
+        proxy_pass http://pg8083/;
+   }   
+   location /8084/ {
+        proxy_pass http://pg8084/;
+   }
+   location /8085/ {
+        proxy_pass http://pg8085/; 
+   }
+   location /8086/ {
+        proxy_pass http://pg8086/;
+   }
+   location /8087/ {
+        proxy_pass http://pg8087/;
+   }   
+   location /8088/ {
+        proxy_pass http://pg8088/;
+   }   
+   location /8089/ {
+        proxy_pass http://pg8089/;
+   }
+   # have to redirect on a any location request, and if the referrer is /8080 do localhost:8080
+   location / {
+    if ($http_referer ~* (/anvio) ) {
+        proxy_pass http://localhost:3010;
+    }
+    ###
+    if ($http_referer ~* (/8080) ) {
+        proxy_pass http://localhost:8080;
+    }
+    if ($http_referer ~* (/8081) ) {
+        proxy_pass http://localhost:8081;
+    }
+    if ($http_referer ~* (/8082) ) {
+        proxy_pass http://localhost:8082;
+    }
+    if ($http_referer ~* (/8083) ) {
+        proxy_pass http://localhost:8083;
+    }
+    if ($http_referer ~* (/8084) ) {
+        proxy_pass http://localhost:8084;
+    }
+    if ($http_referer ~* (/8085) ) {
+        proxy_pass http://localhost:8085;
+    }
+    if ($http_referer ~* (/8086) ) {
+        proxy_pass http://localhost:8086;
+    }
+    if ($http_referer ~* (/8087) ) {
+        proxy_pass http://localhost:8087;
+    }
+    if ($http_referer ~* (/8088) ) {
+        proxy_pass http://localhost:8088;
+    }
+    if ($http_referer ~* (/8089) ) {
+        proxy_pass http://localhost:8089;
+    }
+  }
+}
+

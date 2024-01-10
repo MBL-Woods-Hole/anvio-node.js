@@ -61,8 +61,8 @@ def is_port_in_use(port: int) -> bool:
 
 
 # same as range in 
-port_range = ['8080','8081','8082','8083','8084']#,'8086','8087','8088','8089']
-#port_range = ['8080','8081','8082','8083']
+#port_range = ['8080','8081','8082','8083','8084']#,'8086','8087','8088','8089']
+port_range = ['8080','8081','8082','8083','8084','8085','8086','8087','8088','8089']
 #sleep_time = 10
 sleep_time = 3   # seconds => time of while loop
 time_stamp_max_diff = 50   # seconds => max time between NOW and last logfile update using mtime
@@ -206,8 +206,9 @@ def run(args):
         
         # now look for and parse log files
         log_files = glob.glob(os.path.join(args.file_base, '*.pg.log'))
-        #print('og_files',log_files)
-        for logFileName in log_files:
+        sortedLF = sorted(log_files)
+        #print('log_files',sortedLF)
+        for logFileName in sortedLF:
             
             p = os.path.basename(logFileName).split('.')[0]
             upFileName = os.path.join(args.file_base, up_file_template % p)
