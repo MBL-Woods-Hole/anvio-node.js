@@ -59,8 +59,11 @@ app.get("/", function(req,res){
     }
     docker_params = ['exec','-i','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
-    docker_params.push('--server-only')
-    docker_params.push('--debug')
+    
+    docker_params.push('--server-only')  // means that browser is NOT called
+    docker_params.push('--debug')         // means that output is recorded as log entries: stdout or file
+    docker_params.push('--read-only')    // means default state will not be overwritten
+    
     console.log(CFG.DOCKERPATH+' '+docker_params.join(' '))
     var out = fs.openSync(path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'), 'w');
     var proc = spawn(CFG.DOCKERPATH, docker_params, {
