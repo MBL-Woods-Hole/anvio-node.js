@@ -26,7 +26,8 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 
 //const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086,8087,8088,8089]
-const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086]
+//const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086]
+const DEFAULT_OPEN_PORTS = [8080, 8081]
 //home route
 
 // app.get("/", function(req,res){
@@ -57,9 +58,9 @@ app.get("/", function(req,res){
        })
        return
     }
-    docker_params = ['exec','-i','anvio','anvi-display-pan','-P',port,'-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
+    docker_params = ['exec','-i','anvio','anvi-display-pan','-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
-    
+    docker_params.push('-P',port)
     docker_params.push('--server-only')  // means that browser is NOT called
     docker_params.push('--debug')         // means that output is recorded as log entries: stdout or file
     docker_params.push('--read-only')    // means default state will not be overwritten

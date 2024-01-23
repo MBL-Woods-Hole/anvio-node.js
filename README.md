@@ -1,14 +1,25 @@
 # anvio-node.js
 
-### An anvio` server for HOMD (Human Oral Microbiome Database)
+### An anvio` pangenome server for HOMD (Human Oral Microbiome Database)
 ### To be called like this:  http://*{servername}*/anvio?pg=*{pangenomename}*
 
 ### Links
-[https://homd.org/](https://homd.org/)
+[HOMD](https://homd.org/)
 
-[https://anvio.org/](https://anvio.org/)
+[Anvio`](https://anvio.org/)
 
 [https://merenlab.org/2015/08/22/docker-image-for-anvio/](https://merenlab.org/2015/08/22/docker-image-for-anvio/)
+
+This is a custom node.js project for the HOMD (Human Oral Microbiome Database). Using a docker environment
+to contain the anvio code we use it to serve any custom HOMD pangenomes. 
+
+If you want to use it on your system you will need to install the docker environment listed in Meren's website:
+[docker-image-for-anvio](https://merenlab.org/2015/08/22/docker-image-for-anvio/)
+When running the container we open as many as 10 ports for simultaneous open anvio pangenomes
+`-p 8080-8089:8080-8089`. The same ten ports need to be listed in the app.js file of the anvio-node.js app
+and in the anvio_port_monitor.py python script. 
+
+
 
 ---
 Helpful Docker commands:
@@ -36,19 +47,19 @@ Start docker daemon on ubuntu: https://docs.docker.com/config/daemon/start/
    `sudo systemctl start docker`
     or manually: `sudo dockerd`
 
-For 5 ports run this command in the pangenomes directory:
+For 7 ports run this command in the pangenomes directory:
 
- ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080-8084:8080-8084 meren/anvio:8``
+ ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080-8086:8080-8086 meren/anvio:8``
  
 For 10 ports: Change `8080-8084:8080-8084` to `8080-8089:8080-8089`
 
 Testing: Run anvi-diplay-pan from inside Docker:
 
- ``anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --server-only --debug``
+ ``anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --read-only --server-only --debug``
 
 Or outside Docker:
 
- ``docker exec anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --server-only --debug``
+ ``docker exec anvio anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --read-only --server-only --debug``
 
 Enter a running container:
  >docker exec -it <container_name> bash>
@@ -67,8 +78,8 @@ Enter a running container:
 
 *Use systemd on production system (see anvio.service.TEMPLATE)*
 
-Place pangenomes in a pangenome directory outside of this app root. And make sure the 'PATH_TO_PANGENOMES' in config.js points to it.
-  The name of the pangenome is important and will be used from the initial url link to the pangenomes directory.
+Place pangenomes in a pangenome directory outside of the nodejs app root. And make sure the 'PATH_TO_PANGENOMES' in config.js points to it.
+  The name of the pangenome is important and will be used throughout.
   Also the names of the databases inside the pangenome directory must be the same (PAN.db and GENOMES.db) for every pangenome.
 
 
@@ -82,6 +93,8 @@ Example:
     PAN.db
     GENOMES.db
 ```
+
+---
 ### anvio_port_monitor.py script
 script purpose is to remove unused running anvio pangenomes and report on open port numbers.
 ./anvio_port_monitor.py -host aws -debug
@@ -90,11 +103,11 @@ script purpose is to remove unused running anvio pangenomes and report on open p
 
 *Edit the script public/scripts/anvio_port_monitor.py to suit your system (check pangenome directory path and server name).*
 
-*Copy the public/scripts/anvio_port_monitor.py script to the pangenomes directory. Run this script inside the anvio docker container.*
+*Copy the public/scripts/anvio_port_monitor.py script to the pangenomes directory. Run this script from inside the anvio docker container.*
 
-*Start the anvio_port_monitor.py script*
+*Start the anvio_port_monitor.py script (-h for usage)*
 
-
+---
 ### nginx
 
 *copy nginx.confTEMPLATE to the system's nginx installation (usually /etc/nginx/conf.d/)*
