@@ -135,7 +135,15 @@ def check_port_monitor_log_size():
         #args.logfilep.close()
         #args.logfilep = open(port_monitor_log, 'a')
         args.logfilep.truncate(0)
+def clean_all():
+    # remove all files (*.log and *.up) and procs
+    for port in port_range:
+        filename1 = os.path.join(args.file_base, port+'.pg.log')
+        delete_file(filename1)
+        filename2 = os.path.join(args.file_base, port+'.up')
+        delete_file(filename2)
     
+        
 def run(args):
     
     #regExp = '\[([^)]+)\]'  # captures date time in parens
@@ -148,9 +156,12 @@ def run(args):
     # 172.16.0.3 - - [25/Sep/2002:14:04:19 +0200]
     count = 0
     while 1:
+        if count == 0:
+            clean_all()
         count += 1 
+        
         if count > 100000:
-            count = 0
+            count = 1
         sleep(sleep_time)
         #if !args.debug:
         check_port_monitor_log_size()

@@ -70,7 +70,7 @@ function isInt(value) {
 
 port = '<%= port %>'
 url = '<%= url %>'
-
+console.log('URL',url)
 if(!port || port == '0'){
     text = "All Anvio` ports are in use. Try again later."
     document.getElementById('message').innerHTML = text
@@ -91,9 +91,10 @@ if(!port || port == '0'){
               //document.getElementById('mymessage').innerHTML = 'resp '+response
               if(response === 'isFile'){   // integer 1
                 
-                window.open(url,'_self') 
+                //window.open(url,'_self') 
+                window.open(url,'_blank') 
                 $("#coverScreen").hide();
-                //window.open(url,'_blank') 
+                
                 //document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
               }else{
                   $("#coverScreen").hide();
