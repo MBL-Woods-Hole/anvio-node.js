@@ -120,5 +120,5 @@ script purpose is to remove unused running anvio pangenomes and report on open p
 *Start this node app (anvio-node.js) `sudo systemd restart anvio`*
 
 *Here is the URL that you use to start an Anvio` pangenome:*
-
+https://anvio.homd.org/8080
 ```http://anvio.homd.org/anvio?pg=<pangenome_name>```
