@@ -82,7 +82,7 @@ if(!port || port == '0'){
         args.port = port
         console.log('onload',port)
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("POST", 'wait_on_anvio', true);
+        xmlhttp.open("POST", '/wait_on_anvio', true);
         xmlhttp.setRequestHeader("Content-type","application/json");
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 ) {
