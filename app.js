@@ -30,12 +30,12 @@ app.use(express.static("public"));
 const DEFAULT_OPEN_PORTS = [8080, 8081]
 //home route
 
-app.get("/anvio", function(req,res){
+app.get("/anvio_test", function(req,res){
   res.send("Welcome to the world of science fiction, conflicting theories, fantasies and some eccentric nerds!")
 });
 
 // nginx converts anvio.homd.org/anvio/ to anvio.homd.org/
-app.get("/", function(req,res){
+app.get("/anvio", function(req,res){
    
     console.log('In Anvio/:port')
     console.log('q',req.query)
