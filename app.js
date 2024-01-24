@@ -37,7 +37,7 @@ app.get("/anvio_test", function(req,res){
 //     res.send("Welcome to the world of science fiction, conflicting theories, fantasies and some eccentric nerds!")
 // });
 // nginx converts anvio.homd.org/anvio/ to anvio.homd.org/
-app.get("/anvio", function(req,res){
+app.get("/", function(req,res){
    
     console.log('In Anvio/:port')
     console.log('q',req.query)
