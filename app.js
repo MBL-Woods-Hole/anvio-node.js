@@ -39,8 +39,7 @@ app.get("/anvio_test", function(req,res){
 // nginx converts anvio.homd.org/anvio/ to anvio.homd.org/
 app.get("/", function(req,res){
    
-    console.log('In Anvio/:port')
-    console.log('q',req.query)
+    console.log('In Anvio/:port',req.query)
     pg = req.query.pg
     if(!req.query.pg){
       return res.send("No Pangenome")

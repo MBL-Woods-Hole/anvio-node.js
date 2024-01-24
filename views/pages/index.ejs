@@ -98,14 +98,14 @@ if(!port || port == '0'){
                 //document.getElementById('message').innerHTML = "Open: <a href='"+url+"'>"+url+"</a>"
               }else{
                   $("#coverScreen").hide();
-                  text = "Anvio` port error: "+port
+                  text = "Anvio` port error1: "+port
                   document.getElementById('message').innerHTML = response+'<br>Failed: '+text
               }
             }
         };
         xmlhttp.send(JSON.stringify(args));
     }else{
-        text = "Anvio` port error: "+port
+        text = "Anvio` port error2: "+port
         document.getElementById('message').innerHTML = text
     }
 } 
