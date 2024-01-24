@@ -141,7 +141,7 @@ function anvio_ports(){
     
     if(open_ports.length > 0){
         op = open_ports[Math.floor(Math.random() * open_ports.length)]
-        console.log('Returning Good Port',op)
+        console.log('Good Port',op)
         return op;
     }else{
         return 0
@@ -161,6 +161,7 @@ function isInt(value) {
 https://stackoverflow.com/questions/26165725/nodejs-check-file-exists-if-not-wait-till-it-exist
 */
 const holdBeforeFileExists = async (filePath, timeout) => {
+  console.log('holdBeforeFileExists begin')
   timeout = timeout < 1000 ? 1000 : timeout
   try {
     var nom = 0
@@ -181,6 +182,7 @@ const holdBeforeFileExists = async (filePath, timeout) => {
         }, 100)
       })
   } catch (error) {
+    console.log('holdBeforeFileExists err')
     return false
   }
 }
