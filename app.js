@@ -43,7 +43,7 @@ app.get("/", function(req,res){
     console.log('q',req.query)
     pg = req.query.pg
     if(!req.query.pg){
-      pg = 'Veillonella_Atypica'
+      return res.send("No Pangenome")
     }
     
   
