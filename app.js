@@ -26,8 +26,8 @@ app.set('view engine', 'ejs');
 app.use(express.static("public"));
 
 //const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086,8087,8088,8089]
-//const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086]
-const DEFAULT_OPEN_PORTS = [8080, 8081]
+const DEFAULT_OPEN_PORTS = [8080,8081,8082,8083,8084,8085,8086]
+//const DEFAULT_OPEN_PORTS = [8080, 8081]
 //home route
 
 app.get("/anvio_test", function(req,res){

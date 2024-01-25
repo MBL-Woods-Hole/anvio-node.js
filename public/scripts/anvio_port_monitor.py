@@ -63,8 +63,8 @@ def is_port_in_use(port: int) -> bool:
 # same as range in 
 #port_range = ['8080','8081','8082','8083','8084']
 #port_range = ['8080','8081','8082','8083','8084','8085','8086','8087','8088','8089']
-#port_range = ['8080','8081','8082','8083','8084','8085','8086']
-port_range = ['8080','8081']
+port_range = ['8080','8081','8082','8083','8084','8085','8086']
+#port_range = ['8080','8081']
 #sleep_time = 10
 sleep_time = 3   # seconds => time of while loop
 time_stamp_max_diff = 50   # seconds => max time between NOW and last logfile update using mtime
