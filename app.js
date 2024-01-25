@@ -83,7 +83,7 @@ app.get("/", function(req,res){
          anviourl = CFG.URL_BASE+':'+port +'/'
      }else{
          // app/index.html?rand=af545a01
-         anviourl = CFG.URL_BASE+'/'+port + '/app/index.html?rand=' + makeid(8)
+         anviourl = CFG.URL_BASE+'/'+port + '/app/index.html?rand=' + makerando(8)
      }
      console.log('URL',anviourl)
      res.render('pages/index', {
@@ -122,7 +122,7 @@ app.post("/wait_on_anvio", async(req,res)=>{
 //     console.log('In p8080')
 //     
 // })
-function makeid(length) {
+function makerando(length) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -133,6 +133,7 @@ function makeid(length) {
     }
     return result;
 }
+
 function anvio_ports(){
     let open_ports, op
     // file to be present in docker 'anvio' container
@@ -174,7 +175,7 @@ function isInt(value) {
 https://stackoverflow.com/questions/26165725/nodejs-check-file-exists-if-not-wait-till-it-exist
 */
 const holdBeforeFileExists = async (filePath, timeout) => {
-  console.log('holdBeforeFileExists begin')
+  //console.log('holdBeforeFileExists begin')
   timeout = timeout < 1000 ? 1000 : timeout
   try {
     var nom = 0
@@ -195,7 +196,7 @@ const holdBeforeFileExists = async (filePath, timeout) => {
         }, 100)
       })
   } catch (error) {
-    console.log('holdBeforeFileExists err')
+    //console.log('holdBeforeFileExists err')
     return false
   }
 }
