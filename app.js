@@ -81,7 +81,7 @@ app.get("/", function(req,res){
      if(CFG.DBHOST == 'localhost'){
          anviourl = CFG.URL_BASE+':'+port +'/'
      }else{
-         anviourl = CFG.URL_BASE+'/'+port +'/'
+         anviourl = CFG.URL_BASE+'/'+port  // +'/'  or '/app/index.html' + rand=///
      }
      console.log('URL',anviourl)
      res.render('pages/index', {
