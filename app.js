@@ -81,7 +81,8 @@ app.get("/", function(req,res){
      if(CFG.DBHOST == 'localhost'){
          anviourl = CFG.URL_BASE+':'+port +'/'
      }else{
-         anviourl = CFG.URL_BASE+'/'+port  // +'/'  or '/app/index.html' + rand=///
+         // app/index.html?rand=af545a01
+         anviourl = CFG.URL_BASE+'/'+port + '/app/index.html?rand=' + makeid(8)
      }
      console.log('URL',anviourl)
      res.render('pages/index', {
@@ -120,6 +121,17 @@ app.post("/wait_on_anvio", async(req,res)=>{
 //     console.log('In p8080')
 //     
 // })
+function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
 function anvio_ports(){
     let open_ports, op
     // file to be present in docker 'anvio' container
