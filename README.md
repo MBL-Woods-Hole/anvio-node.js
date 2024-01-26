@@ -50,12 +50,19 @@ Start docker daemon on ubuntu: https://docs.docker.com/config/daemon/start/
 For 7 ports run this command in the pangenomes directory:
 
  ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080-8086:8080-8086 meren/anvio:8``
- 
+ ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080:8080 -p 8081:8081 meren/anvio:8``
 For 10 ports: Change `8080-8084:8080-8084` to `8080-8089:8080-8089`
 
 Testing: Run anvi-diplay-pan from inside Docker:
 
  ``anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --read-only --server-only --debug``
+
+https://www.baeldung.com/ops/docker-expose-more-than-one-port
+$ curl http://localhost:8080
+Hello buddy
+
+$ curl http://localhost:8081/actuator/health
+{"status":"UP"}
 
 Or outside Docker:
 

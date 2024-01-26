@@ -209,6 +209,8 @@ def run(args):
                     if count == 1:
                         # kill if no corresponding log file only on startup
                         kill_proc(pid,'No corresponding log file for '+str(port))
+                    else:
+                        kill_proc(pid,'No corresponding log file for '+str(port))
                 if port in running_ports:
                     running_ports[port].append(pid)
                 else:
