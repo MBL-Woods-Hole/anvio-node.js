@@ -296,7 +296,7 @@ if __name__ == '__main__':
          and close down any unused ports by finding the orphan anvio process
          and killing it
          
-         -host anvio-homd  DEFAULT localhost
+         -host homd_dev  DEFAULT localhost
          
     """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
@@ -310,7 +310,7 @@ if __name__ == '__main__':
                 help = '-debug will print to STDOUT. Default: log to file')
     
     args = parser.parse_args()    
-    if args.host == 'anvio-homd':
+    if args.host == 'homd_dev':
         args.file_base = '/home/ubuntu/anvio/pangenomes/'
     elif args.host == 'localhost':
         args.file_base = '/Users/avoorhis/programming/github/pangenomes/'
