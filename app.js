@@ -59,22 +59,55 @@ app.get("/", function(req,res){
        })
        return
     }
-    docker_params = ['exec','-i','anvio','anvi-display-pan','-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
+    docker_preparams = ['exec','-i','anvio']
+    pan_params = ['anvi-display-pan','-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
-    docker_params.push('-P',port)
-    docker_params.push('--server-only')  // means that browser is NOT called
-    docker_params.push('--debug')         // means that output is recorded as log entries: stdout or file
-    docker_params.push('--read-only')    // means default state will not be overwritten
+    pan_params.push('-P',port)
+    pan_params.push('--server-only')  // means that browser is NOT called
+    pan_params.push('--debug')         // means that output is recorded as log entries: stdout or file
+    pan_params.push('--read-only')    // means default state will not be overwritten
+    // create bash script and run that
+    var logfn = path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log')
+    var logout = fs.openSync(logfn, 'w');
+    console.log(pan_params.join(' '))
+    var bash_script_file = path.join(CFG.PATH_TO_PANGENOMES, port+'.sh')
+    var txt = '#!/usr/bin/env bash\n\n'
+    var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
     
-    console.log(CFG.DOCKERPATH+' '+docker_params.join(' '))
-    var out = fs.openSync(path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'), 'w');
-    console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
-    var proc = spawn(CFG.DOCKERPATH, docker_params, {
+    fs.writeFile(bash_script_file, cmd, function (err) {
+      if (err){
+          console.log(err)
+      }
+      fs.chmod(bash_script_file, 0o755, err => {
+        if (err) {
+          console.log(err)
+        }else{
+           console.log('mode changed',bash_script_file)
+           // console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
+           //console.log('running',CFG.DOCKERPATH+' '+docker_preparams.concat(['sh ',bash_script_file]).join(' '))
+           console.log('Running: '+bash_script_file)
+           
+           //const proc = exec(bash_script_file);
+           const proc = spawn('sh', [bash_script_file], {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
-                    detached: true, stdio: [ 'ignore', out, out ]  //, stdio: 'pipe'
+                    stdio: ['ignore'], detached: true  //, stdio: 'pipe'
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
-     });
-     proc.unref()  // this will allow proc to separate from node
+            });
+            proc.unref()  // this will allow proc to separate from node
+        }
+      });
+
+    });
+    
+    
+    
+    // console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
+//     var proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(pan_params), {
+//                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
+//                     detached: true, stdio: [ 'ignore', logout, logout ]  //, stdio: 'pipe'
+//                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
+//      });
+//      proc.unref()  // this will allow proc to separate from node
      //console.log('proc',proc)
      //url = 'http://localhost:'+port
      //let url = 'http://localhost:3010/anvio?port='+port+'&pg='+pg

@@ -17,13 +17,16 @@ import os
 from stat import * # ST_SIZE etc
 import sys
 import shutil
-
+import types
+import time
+import random
 import glob
-
+import csv
 import re
 from time import sleep
 import configparser as ConfigParser
-import logging
+#sys.path.append( '/Users/avoorhis/programming/vamps-node.js/public/scripts/maintenance_scripts' )
+
 import datetime
 from datetime import timezone, timedelta
 from dateutil import tz
@@ -37,10 +40,6 @@ import subprocess
 import socket
 from contextlib import closing
 
-locahost_path_to_pangenomes = '/Users/avoorhis/programming/github/pangenomes/'
-server_path_to_pangenomes = '/home/ubuntu/anvio/pangenomes/'
-port_monitor_log = 'port_monitor.log'
-open_ports_txt = 'open_ports.txt'
 """
 
 """
@@ -49,137 +48,139 @@ open_ports_txt = 'open_ports.txt'
 #NODE_DATABASE = "vamps_js_development"
 CONFIG_ITEMS = {}
 # get the current time in seconds since the epoch
+locahost_path_to_pangenomes = '/Users/avoorhis/programming/github/pangenomes/'
+server_path_to_pangenomes = '/home/ubuntu/anvio/pangenomes/'
+port_monitor_log = 'port_monitor.log'
+open_ports_txt = 'open_ports.txt'
+log_file_template = '%s.pg.log'
+up_file_template = '%s.up'
+sh_file_template = '%s.sh'
+port_range = ['8080','8081','8082','8083','8084','8085','8086'] #,'8087','8088','8089']
+#port_range = ['8080','8081','8082','8083']
+sleep_time = 4
+time_stamp_max_diff = 200 #70
+diff_epoch_til_now_limit = 100000
 
-#https://stackoverflow.com/questions/4675728/redirect-stdout-to-a-file-in-python
-#with open('file', 'w') as sys.stdout:
-#    print('test')
-
+class Proc:
+    def __init__(self, pid, port):
+        self.pid = pid
+        self.port = port
+        self.age = 0
+        self.diff = 0
+        self.logfn = os.path.join(args.file_base, log_file_template % port)
+        self.upfn  = os.path.join(args.file_base,  up_file_template % port)
+        self.shfn  = os.path.join(args.file_base,  sh_file_template % port)
+        
+    def kill_proc(self):
+        print('XXin kill_proc',self.port)
+        try:
+            os.system('kill '+str(self.pid)+' 2>/dev/null')
+            print('killing',self.pid)
+        except:
+            pass
+            
+    def delete_files(self):
+        print('XXin del files',self.port)
+        try:
+            os.remove(self.upfn)
+            print('deleting',self.upfn)
+        except:
+            pass
+        try:
+            os.remove(self.logfn)
+            print('deleting',self.logfn)
+        except:
+            pass
+        try:
+            os.remove(self.shfn)
+            print('deleting',self.shfn)
+        except:
+            pass
+            
 def is_port_in_use(port: int) -> bool:
     import socket
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
 
-
-# same as range in 
-#port_range = ['8080','8081','8082','8083','8084']
-#port_range = ['8080','8081','8082','8083','8084','8085','8086','8087','8088','8089']
-port_range = ['8080','8081','8082','8083','8084','8085','8086']
-#port_range = ['8080','8081']
-#sleep_time = 10
-sleep_time = 3   # seconds => time of while loop
-time_stamp_max_diff = 50   # seconds => max time between NOW and last logfile update using mtime
-log_file_template = '%s.pg.log'
-up_file_template  = '%s.up'
-# 69434 roughly diff between now and epoch
-# this diff presents before log file is establised
-# used to prevent premature deletion
-# nothing above this number will get deleted
-#diff_epoch_til_now_limit = 10000
-#diff_epoch_til_now_limit = 100000
-def kill_proc(pid, note=''):
-    if args.nodel:
-        print('**nodel set**')
-        print('Not deleting PID:',pid)
-        return
-    if note:
-        if args.debug:
-            print('killproc note: '+note)
-        args.logfilep.write('killproc note: '+note+'\n')
-    try:
-        if args.debug:
-            print('killing '+pid)
-        args.logfilep.write('killing '+pid+'\n')
-        os.system('kill '+str(pid)+' 2>/dev/null')
-    except:
-        if args.debug:
-            print('FailERROR - kill '+str(pid))
-        args.logfilep.write('FailERROR - kill '+str(pid)+'\n')
-        
 def delete_file(fname):
-    if args.nodel:
-        print('**nodel set**')
-        print('Not deleting',fname)
-        return
     try:
-        if args.debug:
-            print('deleting '+fname)
-        args.logfilep.write('deleting '+fname+'\n')
         os.remove(fname)
+        print('deleting',fname)
     except:
-        if args.debug:
-            print('FailERROR removing '+fname)
-        args.logfilep.write('FailERROR removing '+fname+'\n')
+        pass
         
-def delete_file_by_port(p):
-    port_log_file = os.path.join(args.file_base, log_file_template % p)
-    delete_file(port_log_file)
-
-       
-def is_file_updated(fn):
-    st = os.stat(fn)
-    last_forder_update_timestamp = st.st_mtime
-    last_folder_update_datetime = datetime.datetime.fromtimestamp(last_forder_update_timestamp)
-    current_datetime = datetime.datetime.now()
-    difference = abs(current_datetime - last_folder_update_datetime)
-    return difference.total_seconds()
+# def delete_file_by_port(port):
+#     port_log_file = os.path.join(args.file_base, log_file_template % port)
+#     delete_file(port_log_file)
     
+# def initialize(pid):
+#     tmp = {}
+#     tmp['port'] = port
+#     tmp['lapsed'] = 
+#     tmp['diff'] =
+#     tmp['log'] = 
+#     tmp['up'] =
+    
+def check_date_match(last_line):
+    re_match = regExp.search(last_line)
+    if re_match:
+       # good to tell
+       return 1
+    else:
+       time.sleep(5.5)
+       return 0
+
+def is_file_updated(fn):
+    try:
+        update_timestamp = os.stat(fn).st_mtime
+        update_datetime = datetime.datetime.fromtimestamp(update_timestamp)
+        current_datetime = datetime.datetime.now()
+        difference = current_datetime - update_datetime
+        return difference.total_seconds()
+        
+    except:
+        return time_stamp_max_diff + 10  # plus ten 
+        
 def check_port_monitor_log_size():
-    #st = os.stat(port_monitor_log)
-    #print(port_monitor_log,'st',st)
-    #filesize = st.st_size  # in bytes
-    # overnight size on server: 5,194,520
-    #print(port_monitor_log,'filesize',filesize)
-    current_size = args.logfilep.tell()
-    #print(port_monitor_log,'f.tellcurrent_size',current_size)
+    current_size = args.mainlogfilep.tell()
     if current_size > 6000000:  # 6,000,000
-        #args.logfilep.close()
-        #args.logfilep = open(port_monitor_log, 'a')
-        args.logfilep.truncate(0)
+        args.mainlogfilep.truncate(0)
+        
 def clean_all():
     # remove all files (*.log and *.up) and procs
     for port in port_range:
-        filename1 = os.path.join(args.file_base, port+'.pg.log')
+        filename1 = os.path.join(args.file_base, log_file_template % port)
         delete_file(filename1)
         filename2 = os.path.join(args.file_base, port+'.up')
         delete_file(filename2)
-    
+        filename3 = os.path.join(args.file_base, port+'.sh')
+        delete_file(filename3)
+        
+    res1 = subprocess.check_output('ps aux', shell=True)
+    res = str(res1.decode('utf-8')).split('\n')
+    for line in res:
+        if 'anvi-display-pan' in line:
+            line_parts = line.split()
+            pid = line_parts[1]
+            try:
+                print('killing',pid)
+                os.system('kill '+str(pid)+' 2>/dev/null')
+            except:
+                print('Fail ERROR kill '+str(pid))
         
 def run(args):
-    
-    #regExp = '\[([^)]+)\]'  # captures date time in parens
-    #regExp = '\[(.*?)\]'  # captures date time in parens
-    #regExpLogDate = re.compile(r".*\[\s?(\d+/\D+?/.*?)\]")
-    #dateformat = '%d/%b/%Y:%H:%M:%S %z'
-    log_watch = []
-    # [05/Dec/2023:22:18:04 +0000]
-    #re_pattern = '([\d\.?]+) - - \[(.*?)\] "(.*?)" (.*?) (.*?) "(.*?)" "(.*?)"'
-    # 172.16.0.3 - - [25/Sep/2002:14:04:19 +0200]
+    master = {}
     count = 0
     while 1:
         if count == 0:
             clean_all()
         count += 1 
-        
         if count > 100000:
-            count = 1
+            count = 10  #just keeping count reasonable => don't reset to zero!
         sleep(sleep_time)
-        #if !args.debug:
-        check_port_monitor_log_size()
-        #dt = datetime.datetime.now()
-        #currentdt = dt.replace(tzinfo=timezone.utc)
-        running_ports = {}
-        running_ports_keys = []
-        log_ports = {}
-        log_port_keys = [] 
-
-        if args.debug:
-            print()
-        #seconds = time.time()
-        
-        #print('now',round(seconds, 0))
-        #args.logfilep.write()
-        #cmd = 'ps aux|grep "\-P 80"'
-        #res = os.system(cmd)
+        check_port_monitor_log_size()  # on every pass???
+        running_ports = []
+        log_ports = []
         res1 = subprocess.check_output('ps aux', shell=True)
         res = str(res1.decode('utf-8')).split('\n')
         #print('res',res)
@@ -190,185 +191,142 @@ def run(args):
                 #print('resLP',line_parts)
                 # grab and kill unusual ports
                 port_index = line_parts.index('-P') + 1
-                # parse port and pid
-                if len(line_parts) > port_index:
-                    pid = line_parts[1]
-                    port = line_parts[port_index]
-                    
-                else:
-                        # no descernable port
-                    pid = 0
-                    port = 0
-                    #print('Found port',port)
-                    # potential log_file
-                port_log_file = os.path.join(args.file_base, log_file_template % port)
-                if port not in port_range:
-                    kill_proc(pid,'port ('+str(port)+') not in port range')
-                    delete_file_by_port(port)
-                elif not os.path.isfile(port_log_file):
-                    if count == 1:
-                        # kill if no corresponding log file only on startup
-                        kill_proc(pid,'No corresponding log file for '+str(port))
-                    else:
-                        kill_proc(pid,'No corresponding log file for '+str(port))
-                if port in running_ports:
-                    running_ports[port].append(pid)
-                else:
-                    running_ports[port] = [pid]
+                pid = line_parts[1]
+                port = line_parts[port_index]
                 
-        running_ports_keys = list(running_ports.keys())
-        
-        
-        # now look for and parse log files
-        log_files = glob.glob(os.path.join(args.file_base, '*.pg.log'))
-        sortedLF = sorted(log_files)
-        #print('log_files',sortedLF)
-        for logFileName in sortedLF:
-            
-            p = os.path.basename(logFileName).split('.')[0]
-            upFileName = os.path.join(args.file_base, up_file_template % p)
-            
-            #print('tport',p)
-            # what if "anvio.0.log" ?
-            if p not in port_range:
-                delete_file(logFileName)
-                delete_file(upFileName)
-            else:
-                if os.path.isfile(logFileName):
-                    #print('found',logFileName1)
-                    #grep_cmd = ['grep', '"http://127.0.0.1:80"',logFileName]
-                    #result = subprocess.run(grep_cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
-                    #result = subprocess.Popen('grep "http://127.0.0.1:80" %s' % logFileName, stdout=subprocess.PIPE, shell=True)
-                    #serving on 0.0.0.0:8080 view at http://127.0.0.1:8080
-                    try:
-                        result = subprocess.check_output(['grep', 'http://127.0.0.1:', logFileName])
-                        #print('grepcmd',grep_cmd)
-                        if args.debug:
-                            print(p+' grep result: '+(result.strip()).decode('utf-8'))
-                        else:
-                            args.logfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
-                        fpup = open(os.path.join(args.file_base, up_file_template % p), "w")
-                        fpup.write(p+'up')
-                        fpup.close()
-                    except:
-                        if args.debug:
-                            print(p+' grep result 0')
-                        else:
-                            args.logfilep.write(p+' grep result 0'+'\n')
-                    
-                    if p in running_ports_keys:
-                        log_ports[p] = 1
-                    else:
-                        if args.debug:
-                            print('deleting this log file (no anvio running) '+p)
-                        else:
-                            args.logfilep.write('deleting this log file (no anvio running) '+p+'\n')
-                        delete_file(logFileName)
-                        delete_file(upFileName)
-                        if p in log_ports:
-                            log_ports.pop(p)
+                if port in master:
+                    master[port].age += sleep_time 
                 else:
-                    if args.debug:
-                        print('Error -NOT isFile '+logFileName)
-                    else:
-                        args.logfilep.write('Error -NOT isFile '+logFileName+'\n')
-                    
-                    
-        log_ports_keys = list(log_ports.keys())
-        log_ports_keys.sort()
-        running_ports_keys.sort()
-        if args.debug:
-            print('running_ports: '+str(running_ports_keys))
-        else:
-            args.logfilep.write('running_ports: '+str(running_ports_keys)+'\n')
-        if args.debug:
-            print('log_ports '+str(log_ports_keys))
-        else:
-            args.logfilep.write('log_ports '+str(log_ports_keys)+'\n')
-            
-        open_ports = list(set(port_range) - set(log_ports_keys))
-        args.logfilep.write(str(len(open_ports))+' Open Ports: '+str(open_ports)+'\n')
-        # keep an updated file of open ports for node code
-        fp = open(os.path.join(args.file_base, open_ports_txt), "w")
-        fp.write(str(open_ports))
-        fp.close()
-        #time.sleep(5.5)
+                    master[port] = Proc(pid,port)
+                
+        running_ports = list(master.keys())
         
-        for p in log_ports_keys:
+        for port in list(master):
+            print('port age',port,master[port].age)
+            if master[port].age > 10 and not os.path.isfile(master[port].logfn):
+                #kill_proc(pid,'No corresponding log file for '+str(port))
+                print('killig proc because no log > 10sec')
+                master[port].killproc()
+                del master[port]
+            if os.path.isfile(master[port].logfn):
+                log_ports.append(port)
+                try:
+                    result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
+                    #print('grepcmd',grep_cmd)
+                    if args.debug:
+                        print(port+' grep result: '+(result.strip()).decode('utf-8'))
+                    else:
+                         args.mainlogfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
+                    fpup = open(master[port].upfn, "w")
+                    fpup.write(port+'up')
+                    fpup.close()
+                except:
+                     if args.debug:
+                         print(port+' grep result 0')
+                     else:
+                         args.mainlogfilep.write(port+' grep result 0'+'\n')
+            else:
+                if args.debug:
+                    print('Error -NOT isFile '+master[port].logfn)
+                else:
+                    args.mainlogfilep.write('Error -NOT isFile '+master[port].logfn+'\n')
+        
+        log_ports.sort()
+        running_ports.sort()
+        if args.debug:
+            print('running_ports: '+str(running_ports))
+        else:
+            args.mainlogfilep.write('running_ports: '+str(running_ports)+'\n')
+        if args.debug:
+            print('log_ports '+str(log_ports))
+        else:
+            args.mainlogfilep.write('log_ports '+str(log_ports)+'\n')
+        
+        if log_ports != running_ports:
+            if args.debug:
+                print('ERROR running_ports != log_ports: ')
+            else:
+                args.mainlogfilep.write('ERROR running_ports != log_ports:\n')
+        else:
+            open_ports = list(set(port_range) - set(log_ports))
+            if args.debug:
+                print(str(len(open_ports))+' Open Ports: '+str(open_ports))
+            else:
+                args.mainlogfilep.write(str(len(open_ports))+' Open Ports: '+str(open_ports)+'\n')
+            # keep an updated file of open ports for node code
+            fp = open(os.path.join(args.file_base, open_ports_txt), "w")
+            fp.write(str(open_ports))
+            fp.close()
+            
+        # check time difference
+        for port in list(master):
             # read the log files and if the time stamp is not current 
             # or there is no time stamp
             # kill the process and delete the log file
             
-            pfn = os.path.join(args.file_base, log_file_template % p)
-            ufn = os.path.join(args.file_base,  up_file_template % p)
-            difference_seconds = is_file_updated(pfn) # difference from current time
+            difference_seconds = is_file_updated(master[port].logfn) # difference from current time
             if args.debug:
-                print(p+' diff: '+str(difference_seconds))
+                print(port+' diff: '+str(difference_seconds))
             else:
-                args.logfilep.write(p+' diff: '+str(difference_seconds)+'\n')
+                args.mainlogfilep.write(port+' diff: '+str(difference_seconds)+'\n')
             if difference_seconds > time_stamp_max_diff:
                 if args.debug:
                     print('Deleting because DIFF between: '+str(time_stamp_max_diff))
                 else:
-                    args.logfilep.write('Deleting because DIFF between: '+str(time_stamp_max_diff)+'\n')
+                    args.mainlogfilep.write('Deleting because DIFF between: '+str(time_stamp_max_diff)+'\n')
                 
-                delete_file(pfn)
-                delete_file(ufn)
-                for pid in running_ports[p]:
-                    #print('pid',pid)
-                    kill_proc(pid,'long time sep logfile from proc')
-                 
-        #sys.exit()
-    
+                master[port].kill_proc()
+                master[port].delete_files()
+                del master[port]
+                
+                #remove port from 
+                running_ports.remove(port)
+                log_ports.remove(port)
+        
+        
 if __name__ == '__main__':
     import argparse
     
     
     myusage = """usage: anvio_port_monitor.py  [options]
          
-         Must be run inside the anvio` docker container in the /pangenomes directory
+         must be run in the anvio docker container
          
-         Will monitor anvio ports in the %s port range
-         and close down any unused ports by finding the orphan anvio processes
-         and killing it/them. Also removes the port specific orphaned log files.
+         will monitor anvio ports in the 8080-8089 range
+         and close down any unused ports by finding the orphan anvio process
+         and killing it
          
-         Will record open ports to "%s" which is then read by anvio-homd.js to assign ports
-           to the running anvio` pangenomes.
+         -host anvio-homd  DEFAULT localhost
          
-         Options:
-         -host/--host  [DEFAULT: localhost]
-         -debug/--debug Will print log notes to stdout also
-                            will always print to "%s"
-         -nodel/--nodel   No delete of files
-         -h/--help Display this message
-         
-    """ % (port_range,open_ports_txt,port_monitor_log)
-    
+    """
     parser = argparse.ArgumentParser(description="" ,usage=myusage)                 
     
+       
     parser.add_argument("-host", "--host",    
                 required=False,  action="store",   dest = "host", default='localhost',
-                help = 'DEFAULT is localhost')
+                help = '')
     parser.add_argument("-debug", "--debug",    
                 required=False,  action="store_true",   dest = "debug", default=False,
                 help = '-debug will print to STDOUT. Default: log to file')
-    parser.add_argument("-nodel", "--nodel",    
-                required=False,  action="store_true",   dest = "nodel", default=False,
-                help = '-nodel No deletion of logfiles -for debugging')
-                
-    args = parser.parse_args() 
     
-    # logging.basicConfig(level=logging.DEBUG, filename=port_monitor_log, filemode="w",
-#                 format="%(asctime)-15s %(levelname)-8s %(message)s") 
-                  
+    args = parser.parse_args()    
+    if args.host == 'anvio-homd':
+        args.file_base = '/home/ubuntu/anvio/pangenomes/'
+    elif args.host == 'localhost':
+        args.file_base = '/Users/avoorhis/programming/github/pangenomes/'
+    else:
+        print(myusage)
+        sys.exit()
+        
+        
+    args.datetime     = str(datetime.date.today())    
     if args.host == 'localhost':
         args.file_base = locahost_path_to_pangenomes
     else:
         args.file_base = server_path_to_pangenomes
-    
-    args.logfilep = open(port_monitor_log, 'a')
         
-    args.datetime     = str(datetime.date.today())    
+    args.mainlogfilep = open(port_monitor_log, 'w')
     
     run(args)
     #sys.exit('END: vamps_script_upload_metadata.py')
+    
