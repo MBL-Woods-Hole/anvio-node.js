@@ -72,28 +72,40 @@ class Proc:
         self.shfn  = os.path.join(args.file_base,  sh_file_template % port)
         
     def kill_proc(self):
-        print('XXin kill_proc',self.port)
+        
         try:
             os.system('kill '+str(self.pid)+' 2>/dev/null')
-            print('killing',self.pid)
+            if args.debug:
+                print('killing',self.pid)
+            else:
+                args.mainlogfilep.write('killing',self.pid,'\n')
         except:
             pass
             
     def delete_files(self):
-        print('XXin del files',self.port)
+        
         try:
             os.remove(self.upfn)
-            print('deleting',self.upfn)
+            if args.debug:
+                print('deleting',self.upfn)
+            else:
+                args.mainlogfilep.write('deleting',self.upfn,'\n')
         except:
             pass
         try:
             os.remove(self.logfn)
-            print('deleting',self.logfn)
+            if args.debug:
+                print('deleting',self.logfn)
+            else:
+                args.mainlogfilep.write('deleting',self.logfn,'\n')
         except:
             pass
         try:
             os.remove(self.shfn)
-            print('deleting',self.shfn)
+            if args.debug:
+                print('deleting',self.shfn)
+            else:
+                args.mainlogfilep.write('deleting',self.shfn,'\n')
         except:
             pass
             
@@ -105,7 +117,10 @@ def is_port_in_use(port: int) -> bool:
 def delete_file(fname):
     try:
         os.remove(fname)
-        print('deleting',fname)
+        if args.debug:
+            print('deleting',fname)
+        else:
+            args.mainlogfilep.write('deleting',fname.'\n')
     except:
         pass
         
@@ -163,10 +178,17 @@ def clean_all():
             line_parts = line.split()
             pid = line_parts[1]
             try:
-                print('killing',pid)
                 os.system('kill '+str(pid)+' 2>/dev/null')
+                if args.debug:
+                    print('killing',pid)
+                else:
+                    args.mainlogfilep.write('\n')
+                
             except:
-                print('Fail ERROR kill '+str(pid))
+                if args.debug:
+                    print('Fail ERROR kill '+str(pid))
+                else:
+                    args.mainlogfilep.write('\n')
         
 def run(args):
     master = {}
@@ -202,10 +224,13 @@ def run(args):
         running_ports = list(master.keys())
         
         for port in list(master):
-            print('port age',port,master[port].age)
+            
             if master[port].age > 10 and not os.path.isfile(master[port].logfn):
                 #kill_proc(pid,'No corresponding log file for '+str(port))
-                print('killig proc because no log > 10sec')
+                if args.debug:
+                    print('killig proc because no log > 10sec')
+                else:
+                    args.mainlogfilep.write('killig proc because no log > 10sec'+'\n')
                 master[port].killproc()
                 del master[port]
             if os.path.isfile(master[port].logfn):
