@@ -304,9 +304,15 @@ def run(args):
                 master[port].delete_files()
                 del master[port]
                 
-                #remove port from 
-                running_ports.remove(port)
-                log_ports.remove(port)
+                #remove port from master
+                try:
+                    running_ports.remove(port)
+                except:
+                    pass
+                try:
+                    log_ports.remove(port)
+                except:
+                    pass
         
         
 if __name__ == '__main__':
