@@ -120,7 +120,7 @@ def delete_file(fname):
         if args.debug:
             print('deleting',fname)
         else:
-            args.mainlogfilep.write('deleting',fname.'\n')
+            args.mainlogfilep.write('deleting',fname,'\n')
     except:
         pass
         
