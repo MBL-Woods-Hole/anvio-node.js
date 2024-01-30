@@ -236,28 +236,23 @@ def run(args):
             if os.path.isfile(master[port].logfn):
                 log_ports.append(port)
                 try:
-                    print('intry grepcmd')
+                    
                     result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
-                    print('grepcmd',result)
+                    
                     if args.debug:
                         print(port+' grep result: '+(result.strip()).decode('utf-8'))
                     else:
                          args.mainlogfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
                     
+                    fpup = open(master[port].upfn, "w")
+                    fpup.write(port+'-up')
+                    fpup.close()
                 except:
                     if args.debug:
                          print(port+' grep result 0')
                     else:
                          args.mainlogfilep.write(port+' grep result 0'+'\n')
-                try:
-                    fpup = open(master[port].upfn, "w")
-                    fpup.write(port+'up')
-                    fpup.close()
-                except:
-                    if args.debug:
-                         print('No write to UP file')
-                    else:
-                         args.mainlogfilep.write('No write to UP file'+'\n')
+                
             else:
                 if args.debug:
                     print('Error -NOT isFile '+master[port].logfn)
