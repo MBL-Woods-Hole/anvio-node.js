@@ -59,8 +59,8 @@ app.get("/", function(req,res){
        })
        return
     }
-    docker_preparams = ['exec','-d','anvio']
-//     docker exec Options:
+    docker_preparams = ['exec','-id','anvio']
+//     docker exec -h Options:
 //   -d, --detach               Detached mode: run command in the background
 //       --detach-keys string   Override the key sequence for detaching a container
 //   -e, --env list             Set environment variables
@@ -86,7 +86,8 @@ app.get("/", function(req,res){
     if( use_bash_script_envelope ){
       var bash_script_file = path.join(CFG.PATH_TO_PANGENOMES, port+'.sh')
       var txt = '#!/usr/bin/env bash\n\n'
-      var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
+      //var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
+      var cmd = txt +' '+pan_params.join(' ') +' &>'+logfn+'\n'
     
       fs.writeFile(bash_script_file, cmd, function (err) {
         if (err){
@@ -102,7 +103,9 @@ app.get("/", function(req,res){
            console.log('Running: '+bash_script_file)
            
            //const proc = exec(bash_script_file);
-           const proc = spawn('sh', [bash_script_file], {
+           var spawncmd = CFG.DOCKERPATH + docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
+           console.log('spawncmd',spawncmd)
+           const proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(['/bin/sh', '-c', bash_script_file]), {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     stdio: ['ignore'], detached: true  //, stdio: 'pipe'
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'

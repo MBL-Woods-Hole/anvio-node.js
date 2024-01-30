@@ -231,13 +231,13 @@ def run(args):
                     print('killig proc because no log > 10sec')
                 else:
                     args.mainlogfilep.write('killig proc because no log > 10sec'+'\n')
-                master[port].killproc()
+                master[port].kill_proc()
                 del master[port]
             if os.path.isfile(master[port].logfn):
                 log_ports.append(port)
                 try:
                     result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
-                    #print('grepcmd',grep_cmd)
+                    print('grepcmd',grep_cmd)
                     if args.debug:
                         print(port+' grep result: '+(result.strip()).decode('utf-8'))
                     else:
@@ -250,6 +250,7 @@ def run(args):
                          print(port+' grep result 0')
                      else:
                          args.mainlogfilep.write(port+' grep result 0'+'\n')
+            
             else:
                 if args.debug:
                     print('Error -NOT isFile '+master[port].logfn)
