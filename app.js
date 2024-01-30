@@ -59,7 +59,17 @@ app.get("/", function(req,res){
        })
        return
     }
-    docker_preparams = ['exec','-i','anvio']
+    docker_preparams = ['exec','-d','anvio']
+//     docker exec Options:
+//   -d, --detach               Detached mode: run command in the background
+//       --detach-keys string   Override the key sequence for detaching a container
+//   -e, --env list             Set environment variables
+//       --env-file list        Read in a file of environment variables
+//   -i, --interactive          Keep STDIN open even if not attached
+//       --privileged           Give extended privileges to the command
+//   -t, --tty                  Allocate a pseudo-TTY
+//   -u, --user string          Username or UID (format: "<name|uid>[:<group|gid>]")
+//   -w, --workdir string       Working directory inside the container
     pan_params = ['anvi-display-pan','-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
     pan_params.push('-P',port)
@@ -67,18 +77,22 @@ app.get("/", function(req,res){
     pan_params.push('--debug')         // means that output is recorded as log entries: stdout or file
     pan_params.push('--read-only')    // means default state will not be overwritten
     // create bash script and run that
+    var use_bash_script_envelope = true
+    
     var logfn = path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log')
     var logout = fs.openSync(logfn, 'w');
     console.log(pan_params.join(' '))
-    var bash_script_file = path.join(CFG.PATH_TO_PANGENOMES, port+'.sh')
-    var txt = '#!/usr/bin/env bash\n\n'
-    var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
     
-    fs.writeFile(bash_script_file, cmd, function (err) {
-      if (err){
+    if( use_bash_script_envelope ){
+      var bash_script_file = path.join(CFG.PATH_TO_PANGENOMES, port+'.sh')
+      var txt = '#!/usr/bin/env bash\n\n'
+      var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
+    
+      fs.writeFile(bash_script_file, cmd, function (err) {
+        if (err){
           console.log(err)
-      }
-      fs.chmod(bash_script_file, 0o755, err => {
+        }
+        fs.chmod(bash_script_file, 0o755, err => {
         if (err) {
           console.log(err)
         }else{
@@ -94,23 +108,25 @@ app.get("/", function(req,res){
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
             });
             proc.unref()  // this will allow proc to separate from node
-        }
-      });
+          }
+        });
 
-    });
+      });
+      
+    }else{  // NO bash script
     
-    
-    
-    // console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
-//     var proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(pan_params), {
-//                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
-//                     detached: true, stdio: [ 'ignore', logout, logout ]  //, stdio: 'pipe'
-//                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
-//      });
-//      proc.unref()  // this will allow proc to separate from node
+        console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
+        var proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(pan_params), {
+                    //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
+                    detached: true, stdio: [ 'ignore', logout, logout ]  //, stdio: 'pipe'
+                    //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
+        });
+        proc.unref()  // this will allow proc to separate from node
      //console.log('proc',proc)
      //url = 'http://localhost:'+port
      //let url = 'http://localhost:3010/anvio?port='+port+'&pg='+pg
+    }  // bash yes/no
+    
      let anviourl
      if(CFG.DBHOST == 'localhost'){
          anviourl = CFG.URL_BASE+':'+port +'/'

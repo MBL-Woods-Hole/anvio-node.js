@@ -274,6 +274,7 @@ def run(args):
                 args.mainlogfilep.write('ERROR running_ports != log_ports:\n')
         else:
             open_ports = list(set(port_range) - set(log_ports))
+            open_ports.sort()
             if args.debug:
                 print(str(len(open_ports))+' Open Ports: '+str(open_ports))
             else:
