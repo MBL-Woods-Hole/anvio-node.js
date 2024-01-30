@@ -248,7 +248,7 @@ def run(args):
                     if args.debug:
                         print(port+' grep result: '+(result.strip()).decode('utf-8'))
                     else:
-                         args.mainlogfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
+                         args.mainlogfilep.write(port+' grep result: '+(result.strip()).decode('utf-8')+'\n')
                 
                     fpup = open(master[port].upfn, "w")
                     fpup.write(port+'-up')
