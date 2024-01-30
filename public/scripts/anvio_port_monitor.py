@@ -236,8 +236,9 @@ def run(args):
             if os.path.isfile(master[port].logfn):
                 log_ports.append(port)
                 try:
+                    print('intry grepcmd')
                     result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
-                    print('grepcmd',grep_cmd)
+                    print('grepcmd',result)
                     if args.debug:
                         print(port+' grep result: '+(result.strip()).decode('utf-8'))
                     else:
