@@ -242,15 +242,21 @@ def run(args):
                         print(port+' grep result: '+(result.strip()).decode('utf-8'))
                     else:
                          args.mainlogfilep.write(p+' grep result: '+(result.strip()).decode('utf-8')+'\n')
+                    
+                except:
+                    if args.debug:
+                         print(port+' grep result 0')
+                    else:
+                         args.mainlogfilep.write(port+' grep result 0'+'\n')
+                try:
                     fpup = open(master[port].upfn, "w")
                     fpup.write(port+'up')
                     fpup.close()
                 except:
-                     if args.debug:
-                         print(port+' grep result 0')
-                     else:
-                         args.mainlogfilep.write(port+' grep result 0'+'\n')
-            
+                    if args.debug:
+                         print('No write to UP file')
+                    else:
+                         args.mainlogfilep.write('No write to UP file'+'\n')
             else:
                 if args.debug:
                     print('Error -NOT isFile '+master[port].logfn)
