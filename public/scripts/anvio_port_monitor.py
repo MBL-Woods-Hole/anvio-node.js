@@ -236,23 +236,28 @@ def run(args):
             if os.path.isfile(master[port].logfn):
                 log_ports.append(port)
                 result = 0
-                try:
-                    result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
-                except:
-                    if args.debug:
-                         print(port+' grep result 0')
-                    else:
-                         args.mainlogfilep.write(port+' grep result 0'+'\n')
-                
-                if result:   
+                #try:
+                #result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
+                rc = subprocess.call(['grep', 'http://127.0.0.1:', master[port].logfn],
+                        stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                if rc == 0: # found
                     if args.debug:
                         print(port+' grep result: '+(result.strip()).decode('utf-8'))
                     else:
-                         args.mainlogfilep.write(port+' grep result: '+(result.strip()).decode('utf-8')+'\n')
-                
+                         args.mainlogfilep.write(port+' grep result: FOUND http://127.0.0.1'+'\n')
                     fpup = open(master[port].upfn, "w")
                     fpup.write(port+'-up')
                     fpup.close()
+                elif rc == 1: # not found
+                    if args.debug:
+                        print(port+' grep result 0')
+                    else:
+                        args.mainlogfilep.write(port+' grep result 0'+'\n')
+                elif rc > 1: # error
+                    if args.debug:
+                        print(port+' grep ERROR')
+                    else:
+                        args.mainlogfilep.write(port+' grep ERROR'+'\n')
                 
                 
             else:

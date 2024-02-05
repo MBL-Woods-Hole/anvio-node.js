@@ -48,7 +48,9 @@
 
 <body>
   <div id="coverScreen"  class="LockOn"></div>
+  
   <div id='header'>HOMD Selected Pangenome: "<%= pg %>"</div>
+  <div id='seconds-counter'></div>
   <center>
      <div id='message'>Loading Anvio` Pangenome to port #<%= port %><br><a href='<%= url %>'><%= url %></a></div>
   </center>
@@ -71,6 +73,15 @@ function isInt(value) {
 port = '<%= port %>'
 url = '<%= url %>'
 console.log('URL',url)
+
+var seconds = 0;
+var el = document.getElementById('seconds-counter');
+function incrementSeconds() {
+    seconds += 1;
+    el.innerText = "Timer: " + seconds + " seconds.";
+}
+var cancel = setInterval(incrementSeconds, 1000);
+
 if(!port || port == '0'){
     text = "All Anvio` ports are in use. Try again later."
     document.getElementById('message').innerHTML = text
