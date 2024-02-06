@@ -103,7 +103,7 @@ app.get("/", function(req,res){
            console.log('Running: '+bash_script_file)
            
            //const proc = exec(bash_script_file);
-           var spawncmd = CFG.DOCKERPATH + docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
+           var spawncmd = CFG.DOCKERPATH +' '+docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
            console.log('spawncmd',spawncmd)
            const proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(['/bin/sh', '-c', bash_script_file]), {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
