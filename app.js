@@ -236,13 +236,14 @@ const holdBeforeFileExists = async (filePath, timeout) => {
       return new Promise(resolve => {
         var inter = setInterval(() => {
           nom = nom + 100
+          console.log('nom',nom,'timeout',timeout)
           if (nom >= timeout) {
             clearInterval(inter)
             //maybe exists, but my time is up! 
-            console.log('nom',nom,'timeout',timeout)
+            
             resolve(false)
           }
-
+          
           if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             clearInterval(inter)
             console.log("clear timer, even though there's still plenty of time left")
