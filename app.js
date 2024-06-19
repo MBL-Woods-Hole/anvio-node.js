@@ -239,6 +239,7 @@ const holdBeforeFileExists = async (filePath, timeout) => {
           if (nom >= timeout) {
             clearInterval(inter)
             //maybe exists, but my time is up! 
+            console.log('nom',nom,'timeout',timeout)
             resolve(false)
           }
 
@@ -250,7 +251,7 @@ const holdBeforeFileExists = async (filePath, timeout) => {
         }, 100)
       })
   } catch (error) {
-    //console.log('holdBeforeFileExists err')
+    console.log('holdBeforeFileExists err')
     return false
   }
 }
