@@ -151,8 +151,9 @@ app.get("/", function(req,res){
 });
 
 app.post("/wait_on_anvio", async(req,res)=>{
-    console.log('in wait => req.body',req.body)
+    console.log('in wait ('+CFG.WAIT_TIME+' msec)=> req.body',req.body)
     up_file = path.join(CFG.PATH_TO_PANGENOMES,req.body.port+'.up')
+    console.log('in wait looking for',up_file)
     // continue to look for file up to 2 min
     const isFile = await holdBeforeFileExists(up_file, CFG.WAIT_TIME);
     //console.log('file',isFile,up_file)
@@ -228,7 +229,8 @@ https://stackoverflow.com/questions/26165725/nodejs-check-file-exists-if-not-wai
 */
 const holdBeforeFileExists = async (filePath, timeout) => {
   //console.log('holdBeforeFileExists begin')
-  timeout = timeout < 1000 ? 1000 : timeout
+  //timeout = timeout < 1000 ? 1000 : timeout
+  
   try {
     var nom = 0
       return new Promise(resolve => {

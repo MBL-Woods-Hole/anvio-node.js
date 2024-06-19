@@ -28,6 +28,11 @@ How to start docker anvio
  - list images:
  
       `docker images`
+ - rename image:
+ 
+    `docker image tag meren/anvio:8 anvio`
+- delete image:  docker rm <image>
+
  - list containers:
  
      `docker ps -a`
@@ -48,15 +53,21 @@ Start docker daemon on ubuntu: https://docs.docker.com/config/daemon/start/
     or manually: `sudo dockerd`
 
 For 7 ports run this command in the pangenomes directory:
-
- ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080-8086:8080-8086 meren/anvio:8``
+  cd to anvio/pangenomes
+ ``docker run -d --cpus=".5" --name anvio [-u 1000] -i -v `pwd`:`pwd` -w `pwd` -p 8080-8086:8080-8086 meren/anvio:8``
+ ``docker run -d --cpus=".5" --name anvio -u 1000 -i -v `pwd`:`pwd` -w `pwd` -p 8080-8086:8080-8086 meren/anvio:8``
  ``docker run -d --cpus=".5" --name anvio -i -v `pwd`:`pwd` -w `pwd` -p 8080:8080 -p 8081:8081 meren/anvio:8``
 For 10 ports: Change `8080-8084:8080-8084` to `8080-8089:8080-8089`
 
+Enter a running container:
+ >docker exec -it <container_name> bash>
+ >docker exec -it anvio bash
+ 
 Testing: Run anvi-diplay-pan from inside Docker:
 
  ``anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --read-only --server-only --debug``
-
+ ``anvi-display-pan -P 8080 -p Veillonella_genus/PAN.db -g Veillonella_genus/GENOMES.db --read-only --server-only --debug``
+ ``anvi-display-pan -P 8080 -p Prochlorococcus_31/PAN.db -g Prochlorococcus_31/GENOMES.db --read-only --server-only --debug``
 https://www.baeldung.com/ops/docker-expose-more-than-one-port
 $ curl http://localhost:8080
 Hello buddy
@@ -67,10 +78,10 @@ $ curl http://localhost:8081/actuator/health
 Or outside Docker:
 
  ``docker exec anvio anvi-display-pan -P 8080 -p Mitis_Group/PAN.db -g Mitis_Group/GENOMES.db --read-only --server-only --debug``
+ ``docker exec anvio anvi-display-pan -P 8080 -p Veillonella_genus/PAN.db -g Veillonella_genus/GENOMES.db --read-only --server-only --debug``
+ ``docker exec anvio anvi-display-pan -P 8080 -p Prochlorococcus_31/PAN.db -g Prochlorococcus_31/GENOMES.db --read-only --server-only --debug``
 
-Enter a running container:
- >docker exec -it <container_name> bash>
- >docker exec -it anvio bash
+
 
 
 ---
@@ -104,9 +115,10 @@ Example:
 ---
 ### anvio_port_monitor.py script
 script purpose is to remove unused running anvio pangenomes and report on open port numbers.
-./anvio_port_monitor.py -host aws -debug
+./anvio_port_monitor.py -host homd_dev -debug
 -debug prints to STDOUT otherwise it will print to a file.
 -host defaults to 'localhost'
+- run in the background: ./anvio_port_monitor.py -host homd_dev &
 
 *Edit the script public/scripts/anvio_port_monitor.py to suit your system (check pangenome directory path and server name).*
 
