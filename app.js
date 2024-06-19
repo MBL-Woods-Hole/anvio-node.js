@@ -156,7 +156,7 @@ app.post("/wait_on_anvio", async(req,res)=>{
     console.log('in wait looking for',up_file)
     // continue to look for file up to 2 min
     const isFile = await holdBeforeFileExists(up_file, CFG.WAIT_TIME);
-    //console.log('file',isFile,up_file)
+    console.log('file',isFile,up_file)
     if(isFile){
         console.log('returning isFile true: ','"'+req.body.port+'.up"')
         return res.send('isFile')  // 
@@ -228,9 +228,9 @@ function isInt(value) {
 https://stackoverflow.com/questions/26165725/nodejs-check-file-exists-if-not-wait-till-it-exist
 */
 const holdBeforeFileExists = async (filePath, timeout) => {
-  //console.log('holdBeforeFileExists begin')
-  //timeout = timeout < 1000 ? 1000 : timeout
-  
+  console.log('holdBeforeFileExists begin')
+  timeout = timeout < 1000 ? 1000 : timeout
+  console.log('timeout',timeout)
   try {
     var nom = 0
       return new Promise(resolve => {
@@ -245,7 +245,7 @@ const holdBeforeFileExists = async (filePath, timeout) => {
 
           if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
             clearInterval(inter)
-            //clear timer, even though there's still plenty of time left
+            console.log("clear timer, even though there's still plenty of time left")
             resolve(true)
           }
         }, 100)
