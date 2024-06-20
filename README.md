@@ -19,7 +19,7 @@ When running the container we open as many as 10 ports for simultaneous open anv
 `-p 8080-8089:8080-8089`. The same ten ports need to be listed in the app.js file of the anvio-node.js app
 and in the anvio_port_monitor.py python script. 
 
-
+NGINX https://docs.rackspace.com/docs/basic-nginx-troubleshooting
 
 ---
 Helpful Docker commands:
@@ -41,13 +41,14 @@ How to start docker anvio
      `docker kill 06a1c7bc96ab <container_id>`
  - stop docker:
  
-    `docker ps`
+    `docker ps` 
     
     `docker stop <container_id>`
  - start a stopped container:
  
     `docker start <container_id>`
 ---
+
 Start docker daemon on ubuntu: https://docs.docker.com/config/daemon/start/
    `sudo systemctl start docker`
     or manually: `sudo dockerd`

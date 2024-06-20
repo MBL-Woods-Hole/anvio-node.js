@@ -70,7 +70,7 @@ app.get("/", function(req,res){
 //   -t, --tty                  Allocate a pseudo-TTY
 //   -u, --user string          Username or UID (format: "<name|uid>[:<group|gid>]")
 //   -w, --workdir string       Working directory inside the container
-    pan_params = ['anvi-display-pan','-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
+    pan_params = [CFG.ANVIPATH+'anvi-display-pan','-p',path.join(CFG.PATH_TO_PANGENOMES,pg+'/PAN.db'),'-g',path.join(CFG.PATH_TO_PANGENOMES,pg+'/GENOMES.db')]
     // docker exec -it anvio anvi-display-pan -P 8080 -p Veillonella_HMT780/PAN.db -g Veillonella_HMT780/GENOMES.db
     pan_params.push('-P',port)
     pan_params.push('--server-only')  // means that browser is NOT called
@@ -103,10 +103,13 @@ app.get("/", function(req,res){
            console.log('Running: '+bash_script_file)
            
            //const proc = exec(bash_script_file);
-           var spawncmd = CFG.DOCKERPATH +' '+docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
+           //var spawncmd = CFG.DOCKERPATH +' '+docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
+           var spawncmd = ['/bin/sh', '-c', bash_script_file]
            console.log('spawncmd',spawncmd)
-           const proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(['/bin/sh', '-c', bash_script_file]), {
+           //const proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(['/bin/sh', '-c', bash_script_file]), {
+           const proc = spawn(['/bin/sh', '-c', bash_script_file], {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
+                    env:{'PATH':CFG.PATH},
                     stdio: ['ignore'], detached: true  //, stdio: 'pipe'
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
             });
@@ -119,8 +122,10 @@ app.get("/", function(req,res){
     }else{  // NO bash script
     
         console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
-        var proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(pan_params), {
+        console.log('Using Instead',pan_params)
+        var proc = spawn(pan_params, {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
+                    env:{'PATH':CFG.PATH},
                     detached: true, stdio: [ 'ignore', logout, logout ]  //, stdio: 'pipe'
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
         });
