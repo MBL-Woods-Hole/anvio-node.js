@@ -238,7 +238,7 @@ def run(args):
                 result = 0
                 #try:
                 #result = subprocess.check_output(['grep', 'http://127.0.0.1:', master[port].logfn])
-                rc = subprocess.call(['grep', 'http://127.0.0.1:', master[port].logfn],
+                rc = subprocess.call(['grep', 'http://0.0.0.0:', master[port].logfn],
                         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
                 if rc == 0: # found
                     if args.debug:
