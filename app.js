@@ -38,7 +38,7 @@ app.get("/anvio_test", function(req,res){
 // });
 // nginx converts anvio.homd.org/anvio/ to anvio.homd.org/
 app.get("/", function(req,res){
-   
+    // WE'VE REMOVED DOCKER
     console.log('In Anvio/:port',req.query)
     pg = req.query.pg
     if(!req.query.pg){
@@ -88,13 +88,13 @@ app.get("/", function(req,res){
       var txt = '#!/usr/bin/sh\n\n'
       //var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
       //foo > allout.txt 2>&1  <= pipe ALL output to one file
-      var cmd = txt +' '+pan_params.join(' ') +' >'+logfn+' 2>&1\n'
+      var anvi_cmd = txt +' '+pan_params.join(' ') +' >'+logfn+' 2>&1\n'
     
-      fs.writeFile(bash_script_file, cmd, function (err) {
+      fs.writeFile(bash_script_file, anvi_cmd, function (err) {
         if (err){
           console.log(err)
         }
-        fs.chmod(bash_script_file, 0o755, err => {
+        fs.chmod(bash_script_file, 0o755, err => {   // make it executable
         if (err) {
           console.log(err)
         }else{
@@ -105,12 +105,11 @@ app.get("/", function(req,res){
            
            //const proc = exec(bash_script_file);
            //var spawncmd = CFG.DOCKERPATH +' '+docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
-           var spawncmd = ['/bin/sh', '-c', bash_script_file]
-           console.log('spawncmd',spawncmd.join(' '))
+           //var spawncmd = ['/bin/sh', '-c', bash_script_file]
+           //console.log('spawncmd',spawncmd.join(' '))
            //const proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(['/bin/sh', '-c', bash_script_file]), {
            //const proc = spawn(['/bin/sh', '-c', bash_script_file].join(' '), {
            const proc = spawn(bash_script_file, {
-                    //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     env:{'PATH':CFG.PATH},
                     stdio: ['ignore'], detached: true  //, stdio: 'pipe'
                     //detached: false, stdio: 'pipe'  //, stdio: 'pipe'
@@ -122,7 +121,7 @@ app.get("/", function(req,res){
       });
       
     }else{  // NO bash script
-    
+        // THIS NOT TESTED....
         console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
         console.log('Using Instead',pan_params.join(' '))
         var proc = spawn(pan_params.join(' '), {
@@ -158,12 +157,12 @@ app.get("/", function(req,res){
 });
 
 app.post("/wait_on_anvio", async(req,res)=>{
-    console.log('in wait ('+CFG.WAIT_TIME+' msec)=> req.body',req.body)
+    console.log('in wait: ('+CFG.WAIT_TIME+' msec)=> req.body',req.body)
     up_file = path.join(CFG.PATH_TO_PANGENOMES,req.body.port+'.up')
-    console.log('in wait looking for',up_file)
+    console.log('in wait: looking for',up_file)
     // continue to look for file up to 2 min
-    const isFile = await holdBeforeFileExists(up_file, CFG.WAIT_TIME);
-    console.log('file',isFile,up_file)
+    const isFile = await hold_before_file_exists(up_file, CFG.WAIT_TIME);
+    console.log('file', isFile, up_file)
     if(isFile){
         console.log('returning isFile true: ','"'+req.body.port+'.up"')
         return res.send('isFile')  // 
@@ -234,10 +233,10 @@ function isInt(value) {
 * @returns {Promise<Boolean>}
 https://stackoverflow.com/questions/26165725/nodejs-check-file-exists-if-not-wait-till-it-exist
 */
-const holdBeforeFileExists = async (filePath, timeout) => {
-  console.log('holdBeforeFileExists begin')
+const hold_before_file_exists = async (filePath, timeout) => {
+  console.log('hold_before_file_exists begin')
   timeout = timeout < 1000 ? 1000 : timeout
-  console.log('timeout',timeout)
+  //console.log('timeout',timeout)
   try {
     var nom = 0
       return new Promise(resolve => {
@@ -259,7 +258,7 @@ const holdBeforeFileExists = async (filePath, timeout) => {
         }, 1000)
       })
   } catch (error) {
-    console.log('holdBeforeFileExists err')
+    console.log('hold_before_file_exists() err')
     return false
   }
 }
