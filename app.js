@@ -85,7 +85,7 @@ app.get("/", function(req,res){
     
     if( use_bash_script_envelope ){
       var bash_script_file = path.join(CFG.PATH_TO_PANGENOMES, port+'.sh')
-      var txt = '#!/usr/bin/env bash\n\n'
+      var txt = '#!/usr/bin/sh\n\n'
       //var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
       var cmd = txt +' '+pan_params.join(' ') +' &>'+logfn+'\n'
     
