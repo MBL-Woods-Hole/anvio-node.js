@@ -105,9 +105,9 @@ app.get("/", function(req,res){
            //const proc = exec(bash_script_file);
            //var spawncmd = CFG.DOCKERPATH +' '+docker_preparams.concat(['/bin/sh', '-c', bash_script_file]).join(' ')
            var spawncmd = ['/bin/sh', '-c', bash_script_file]
-           console.log('spawncmd',spawncmd)
+           console.log('spawncmd',spawncmd.join(' '))
            //const proc = spawn(CFG.DOCKERPATH, docker_preparams.concat(['/bin/sh', '-c', bash_script_file]), {
-           const proc = spawn(['/bin/sh', '-c', bash_script_file], {
+           const proc = spawn(('/bin/sh', '-c', bash_script_file).join(' '), {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     env:{'PATH':CFG.PATH},
                     stdio: ['ignore'], detached: true  //, stdio: 'pipe'
@@ -122,8 +122,8 @@ app.get("/", function(req,res){
     }else{  // NO bash script
     
         console.log('LOG', path.join(CFG.PATH_TO_PANGENOMES, port+'.pg.log'))
-        console.log('Using Instead',pan_params)
-        var proc = spawn(pan_params, {
+        console.log('Using Instead',pan_params.join(' '))
+        var proc = spawn(pan_params.join(' '), {
                     //env:{'PATH':CFG.PATH,'LD_LIBRARY_PATH':CFG.LD_LIBRARY_PATH},
                     env:{'PATH':CFG.PATH},
                     detached: true, stdio: [ 'ignore', logout, logout ]  //, stdio: 'pipe'
