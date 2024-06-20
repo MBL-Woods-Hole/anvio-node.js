@@ -87,7 +87,8 @@ app.get("/", function(req,res){
       var bash_script_file = path.join(CFG.PATH_TO_PANGENOMES, port+'.sh')
       var txt = '#!/usr/bin/sh\n\n'
       //var cmd = txt + CFG.DOCKERPATH + ' '+(docker_preparams.concat(pan_params)).join(' ') +' &>'+logfn+'\n'
-      var cmd = txt +' '+pan_params.join(' ') +' &>'+logfn+'\n'
+      //foo > allout.txt 2>&1  <= pipe ALL output to one file
+      var cmd = txt +' '+pan_params.join(' ') +' >'+logfn+' 2>&1\n'
     
       fs.writeFile(bash_script_file, cmd, function (err) {
         if (err){
